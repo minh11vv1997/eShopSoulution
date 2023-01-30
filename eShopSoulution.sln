@@ -5,6 +5,11 @@ VisualStudioVersion = 16.0.32929.386
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "eShopSolution.WebApp", "eShopSolution.WebApp\eShopSolution.WebApp.csproj", "{EA47DA2B-97EA-4EB6-B332-4B9ABA491AB8}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{D976A4BA-2C25-446A-B45E-F8EAB6B3BD5C}"
+	ProjectSection(SolutionItems) = preProject
+		REAME.md = REAME.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
