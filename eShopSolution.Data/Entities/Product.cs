@@ -12,8 +12,7 @@ namespace eShopSolution.Data.Entities
         public decimal OriginalPrice { get; set; }
         public int Stock { get; set; }
         public int ViewCount { get; set; }
-        public DateTime DeteCreated { get; set; }
-        public string SeoAlias { get; set; }
+        public DateTime DateCreated { get; set; }
         // Thêm thuộc tính để kết nối n-n giữa 2 bảng product and category
         public List<ProductInCategory> ProductInCategories { get; set; }
         // Thuộc tính kết nối 1-n giữa 2 bảng OrderDetails và Product
