@@ -1,5 +1,6 @@
 ﻿using eShopSolution.Data.Entities;
 using eShopSolution.Data.Enums;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -89,6 +90,37 @@ namespace eShopSolution.Data.Extensions
              new Slide() { Id = 5, Name = "Second Thumbnail label", Description = "Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus. Nullam id dolor id nibh ultricies vehicula ut id elit.", SortOrder = 5, Url = "#", Image = "/themes/images/carousel/5.png", Status = Status.Active },
              new Slide() { Id = 6, Name = "Second Thumbnail label", Description = "Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus. Nullam id dolor id nibh ultricies vehicula ut id elit.", SortOrder = 6, Url = "#", Image = "/themes/images/carousel/6.png", Status = Status.Active }
              );
+
+            // Thêm cho bảng admin
+            var roleId  = new Guid("D276B5EB-7E1D-4347-96BF-CE5931BDE593");
+            var adminId = new Guid("4FF07EC1-1521-4F74-92E8-B03F26A72A96");
+            modelBuilder.Entity<AppRole>().HasData(
+                new AppRole {
+                    Id = roleId,
+                    Name = "admin",
+                    NormalizedName = "admin",
+                    Description = "Administrator role"
+                });
+            var hasher = new PasswordHasher<AppUser>();
+            modelBuilder.Entity<AppUser>().HasData(new AppUser
+            {
+                Id = adminId,
+                UserName = "admin",
+                NormalizedUserName = "admin",
+                Email = "minhvv@rikkeisoft.com",
+                NormalizedEmail = "minhvv@rikkeisoft.com",
+                EmailConfirmed = true,
+                PasswordHash = hasher.HashPassword(null,"123456a@A"),
+                SecurityStamp = string.Empty,
+                FirstName = "Minh",
+                LastName = "Vu",
+                Dob = new DateTime(2023,01,02)
+            });
+            modelBuilder.Entity<IdentityUserRole<Guid>>().HasData(new IdentityUserRole<Guid>
+            {
+                RoleId = roleId,
+                UserId = adminId
+            });
         }
     }
 }
