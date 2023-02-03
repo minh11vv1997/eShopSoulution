@@ -20,6 +20,34 @@ namespace eShopSolution.Application.Catalog.Products
             _context = context;
         }
 
+        public async Task<List<ProductViewModel>> GetAll()
+        {
+            // 1: Select và kết nối 
+            var query = from product in _context.Products
+                        join productTranslition in _context.ProductTranslations on product.Id equals productTranslition.ProductId
+                        join productCategory in _context.ProductInCategories on product.Id equals productCategory.ProductId
+                        join category in _context.Categories on product.Id equals category.Id
+                        select new { product, productTranslition, productCategory };
+
+            var data = await query.Select(sp => new ProductViewModel()
+            {
+                Id = sp.product.Id,
+                Name = sp.productTranslition.Name,
+                DateCreated = sp.product.DateCreated,
+                Description = sp.productTranslition.Description,
+                Details = sp.productTranslition.Details,
+                LanguageId = sp.productTranslition.LanguageId,
+                OriginalPrice = sp.product.OriginalPrice,
+                Price = sp.product.Price,
+                SeoAlias = sp.productTranslition.SeoAlias,
+                SeoDescription = sp.productTranslition.SeoDescription,
+                SeoTitle = sp.productTranslition.SeoTitle,
+                Stock = sp.product.Stock,
+                ViewCount = sp.product.ViewCount
+            }).ToListAsync();
+            return data;
+        }
+
         public async Task<PagedResult<ProductViewModel>> GetAllByCategoryId(GetPublicProductPagingRequest request)
         {
             // 1: Select và kết nối 
