@@ -67,7 +67,8 @@ namespace eShopSolution.Application.Catalog.Products
                 };
             }
             _context.Products.Add(product);
-            return await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
+            return product.Id;
         }
         public async Task AddViewCount(int productId)
         {
@@ -262,6 +263,29 @@ namespace eShopSolution.Application.Catalog.Products
                 SortOrder = image.SortOrder
             };
             return viewModel;
+        }
+
+        public async Task<ProductViewModel> GetById(int productId,string languageId)
+        {
+            var product = await _context.Products.FindAsync(productId);
+            var productTransilation = await _context.ProductTranslations.FirstOrDefaultAsync(x => x.ProductId == productId && x.LanguageId == languageId);
+
+            var viewmodelProduct = new ProductViewModel()
+            {
+                Id = product.Id,
+                DateCreated = product.DateCreated,
+                Description = productTransilation != null ? productTransilation.LanguageId : null,
+                LanguageId = productTransilation.LanguageId,
+                Details = productTransilation != null ? productTransilation.Details : null,
+                Name = productTransilation != null ? productTransilation.Name : null,
+                OriginalPrice = product.OriginalPrice,
+                Price = product.Price,
+                SeoAlias = productTransilation != null ? productTransilation.SeoAlias : null,
+                SeoDescription = productTransilation != null ? productTransilation.SeoDescription : null,
+                Stock = product.Stock,
+                ViewCount = product.ViewCount
+            };
+            return viewmodelProduct;
         }
     }
 }
