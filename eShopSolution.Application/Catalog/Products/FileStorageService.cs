@@ -32,9 +32,17 @@ namespace eShopSolution.Application.Catalog.Products
 
         public async Task SaveFileAsync(Stream mediaBinaryStream, string fileName)
         {
+            //var path = Path.Combine("home", "ReadMe.txt"); //  "home/ReadMe.txt"
             var fileFath = Path.Combine(_userContentFolde, fileName);
-            using var output = new FileStream(fileFath, FileMode.Create);
-            await mediaBinaryStream.CopyToAsync(output);
+            if (File.Exists(fileFath))
+            {
+                using (FileStream fs = File.Create(fileFath))
+                {
+                    await mediaBinaryStream.CopyToAsync(fs);
+                }
+            }
+            using var output = new FileStream(fileFath,FileMode.Create);
+            await mediaBinaryStream.CopyToAsync(output); 
         }
     }
 }

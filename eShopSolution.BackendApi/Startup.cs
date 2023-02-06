@@ -1,5 +1,7 @@
 ﻿using eShopSolution.Application.Catalog.Products;
+using eShopSolution.Application.Catalog.Services.admin;
 using eShopSolution.Application.Catalog.Services.client;
+using eShopSolution.Application.Catalog.Services.Common;
 using eShopSolution.Data.EF;
 using eShopSoulution.Utilities.Constants;
 using Microsoft.AspNetCore.Builder;
@@ -34,6 +36,8 @@ namespace eShopSolution.BackendApi
             options.UseSqlServer(Configuration.GetConnectionString(SystemConstants.MAIN_CONNECTION_STRING)));
             //Tạo Dependency Injection để tiêm phụ thuộc ở tầng service
             services.AddTransient<IPublicProductService, PublicProductService>();
+            services.AddTransient<IManageProductService, ManageProductService>();
+            services.AddTransient<IStoregeService, FileStorageService>();
 
             services.AddControllersWithViews();
             // Thêm service cho swagger
