@@ -10,7 +10,7 @@ namespace eShopSolution.Application.Catalog.Services.client
     public interface IPublicProductService
     {
         // Cac Action cua Client
-        Task<PagedResult<ProductViewModel>> GetAllByCategoryId(GetPublicProductPagingRequest request);
+        Task<PagedResult<ProductViewModel>> GetAllByCategoryId(string languageId, GetPublicProductPagingRequest request);
         Task<List<ProductViewModel>> GetAll(string languageId);
     }
 }

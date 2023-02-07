@@ -22,11 +22,13 @@ namespace eShopSolution.Application.Catalog.Products
     {
         private readonly EShopDbContext _context;
         private readonly IStoregeService _storegeService;
+
         public ManageProductService(EShopDbContext context, IStoregeService storegeService)
         {
             _context = context;
             _storegeService = storegeService;
         }
+
         public async Task<int> Create(ProductCreateRequest requestCr)
         {
             var product = new Product()
@@ -70,12 +72,14 @@ namespace eShopSolution.Application.Catalog.Products
             await _context.SaveChangesAsync();
             return product.Id;
         }
+
         public async Task AddViewCount(int productId)
         {
             var product = await _context.Products.FindAsync(productId);
             product.ViewCount += 1;
             await _context.SaveChangesAsync();
         }
+
         public async Task<int> Update(ProductUpdateRequest requestUp)
         {
             var product = _context.Products.Find(requestUp.Id);
@@ -117,6 +121,7 @@ namespace eShopSolution.Application.Catalog.Products
             product.Stock += addedQuantity;
             return await _context.SaveChangesAsync() > 0;
         }
+
         public async Task<int> Delete(int productId)
         {
             var product = await _context.Products.FindAsync(productId);
@@ -129,9 +134,10 @@ namespace eShopSolution.Application.Catalog.Products
             {
                 await _storegeService.DeleteFileAsync(item.ImagePath);
             }
-             _context.Products.Remove(product);
+            _context.Products.Remove(product);
             return await _context.SaveChangesAsync();
         }
+
         public async Task<PagedResult<ProductViewModel>> GetAllPaging(GetManageProductPagingRequest request)
         {
             // B1: Select lấy dữ liệu
@@ -179,6 +185,7 @@ namespace eShopSolution.Application.Catalog.Products
             };
             return pageResult;
         }
+
         private async Task<string> SaveFile(IFormFile formFile)
         {
             var originalFileName = ContentDispositionHeaderValue.Parse(formFile.ContentDisposition).FileName.Trim('"');
@@ -219,7 +226,7 @@ namespace eShopSolution.Application.Catalog.Products
         {
             var productImg = await _context.ProductImages.FindAsync(imageId);
             if (requestUpm == null) throw new EShopException($"Khong tim thay anh san pham : {imageId}");
-            if (requestUpm.ImageFile  != null)
+            if (requestUpm.ImageFile != null)
             {
                 productImg.ImagePath = await this.SaveFile(requestUpm.ImageFile);
                 productImg.FileSize = requestUpm.ImageFile.Length;
@@ -230,7 +237,7 @@ namespace eShopSolution.Application.Catalog.Products
 
         public async Task<List<ProductImageViewModel>> GetListImage(int productImagesId)
         {
-            var productIm = await _context.ProductImages.Where(x => x.ProductId == productImagesId) 
+            var productIm = await _context.ProductImages.Where(x => x.ProductId == productImagesId)
                             .Select(i => new ProductImageViewModel()
                             {
                                 Id = i.Id,
@@ -242,12 +249,11 @@ namespace eShopSolution.Application.Catalog.Products
                                 SortOrder = i.SortOrder
                             }).ToListAsync();
             return productIm;
-
         }
 
-        public async Task<ProductImageViewModel> GetListImageById(int productImagesId)
+        public async Task<ProductImageViewModel> GetImageById(int productImagesId)
         {
-            var image =await  _context.ProductImages.FindAsync(productImagesId);
+            var image = await _context.ProductImages.FindAsync(productImagesId);
             if (image == null)
             {
                 throw new EShopException($"Khong tim thay anh voi id {image}");
@@ -265,7 +271,7 @@ namespace eShopSolution.Application.Catalog.Products
             return viewModel;
         }
 
-        public async Task<ProductViewModel> GetById(int productId,string languageId)
+        public async Task<ProductViewModel> GetById(int productId, string languageId)
         {
             var product = await _context.Products.FindAsync(productId);
             var productTransilation = await _context.ProductTranslations.FirstOrDefaultAsync(x => x.ProductId == productId && x.LanguageId == languageId);
