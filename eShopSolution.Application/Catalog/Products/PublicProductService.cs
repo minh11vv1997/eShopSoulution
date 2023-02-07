@@ -49,14 +49,14 @@ namespace eShopSolution.Application.Catalog.Products
             return data;
         }
 
-        public async Task<PagedResult<ProductViewModel>> GetAllByCategoryId(GetPublicProductPagingRequest request)
+        public async Task<PagedResult<ProductViewModel>> GetAllByCategoryId(string languageId, GetPublicProductPagingRequest request)
         {
             // 1: Select và kết nối 
             var query = from product in _context.Products
                         join productTranslition in _context.ProductTranslations on product.Id equals productTranslition.ProductId
                         join productCategory in _context.ProductInCategories on product.Id equals productCategory.ProductId
                         join category in _context.Categories on product.Id equals category.Id
-                        where productTranslition.LanguageId == request.LanguageId
+                        where productTranslition.LanguageId == languageId
                         select new { product, productTranslition, productCategory };
 
             // Lọc dữ liệu cần tìm kiếm
