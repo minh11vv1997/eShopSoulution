@@ -1,21 +1,22 @@
-﻿using eShopSolution.Application.Catalog.Services.Common;
-using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Hosting;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace eShopSolution.Application.Catalog.Products
+namespace eShopSolution.Application.Catalog.Services.Common
 {
     public class FileStorageService : IStoregeService
     {
         private readonly string _userContentFolde;
         private const string USER_CONTENT_FOLDER_NAME = "user-content";
+
         public FileStorageService(IWebHostEnvironment webHostEnvironment)
         {
             _userContentFolde = Path.Combine(webHostEnvironment.WebRootPath, USER_CONTENT_FOLDER_NAME);
         }
+
         public async Task DeleteFileAsync(string fileName)
         {
             var filePath = Path.Combine(_userContentFolde, fileName);
@@ -41,8 +42,8 @@ namespace eShopSolution.Application.Catalog.Products
                     await mediaBinaryStream.CopyToAsync(fs);
                 }
             }
-            using var output = new FileStream(fileFath,FileMode.Create);
-            await mediaBinaryStream.CopyToAsync(output); 
+            using var output = new FileStream(fileFath, FileMode.Create);
+            await mediaBinaryStream.CopyToAsync(output);
         }
     }
 }

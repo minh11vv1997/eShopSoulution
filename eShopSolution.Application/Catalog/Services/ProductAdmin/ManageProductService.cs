@@ -1,5 +1,5 @@
-﻿using eShopSolution.Application.Catalog.Services.admin;
-using eShopSolution.Application.Catalog.Services.Common;
+﻿using eShopSolution.Application.Catalog.Services.Common;
+using eShopSolution.Application.Catalog.Services.ProductAdmin;
 using eShopSolution.Data.EF;
 using eShopSolution.Data.Entities;
 using eShopSolution.ViewModels.CommentDto;

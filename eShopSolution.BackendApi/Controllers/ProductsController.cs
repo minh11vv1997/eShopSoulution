@@ -1,7 +1,8 @@
-﻿using eShopSolution.Application.Catalog.Services.admin;
-using eShopSolution.Application.Catalog.Services.client;
+﻿using eShopSolution.Application.Catalog.Services.ProductAdmin;
+using eShopSolution.Application.Catalog.Services.Productclient;
 using eShopSolution.ViewModels.ProductImages;
 using eShopSolution.ViewModels.ProductModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -14,6 +15,7 @@ namespace eShopSolution.BackendApi.Controllers
     // Chuẩn RestAPi : api/products
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ProductsController : ControllerBase
     {
         private readonly IPublicProductService _publicProductService;

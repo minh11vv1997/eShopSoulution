@@ -1,5 +1,4 @@
-﻿using eShopSolution.Application.Catalog.Services.client;
-using eShopSolution.Data.EF;
+﻿using eShopSolution.Data.EF;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -8,6 +7,7 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using eShopSolution.ViewModels.CommentDto;
 using eShopSolution.ViewModels.ProductModels;
+using eShopSolution.Application.Catalog.Services.Productclient;
 
 namespace eShopSolution.Application.Catalog.Products
 {
