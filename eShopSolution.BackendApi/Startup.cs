@@ -5,7 +5,12 @@ using eShopSolution.Application.Catalog.Services.Productclient;
 using eShopSolution.Application.Catalog.Services.Users;
 using eShopSolution.Data.EF;
 using eShopSolution.Data.Entities;
+using eShopSolution.ViewModels.ProductModels;
+using eShopSolution.ViewModels.ProductModels.Validators;
+using eShopSolution.ViewModels.Users;
 using eShopSoulution.Utilities.Constants;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -55,7 +60,17 @@ namespace eShopSolution.BackendApi
             services.AddTransient<RoleManager<AppRole>, RoleManager<AppRole>>();
             services.AddTransient<IUserService, UserService>();
 
-            services.AddControllers();
+            services.AddTransient<IValidator<LoginRequest>, LoginRequestValidator>();
+            services.AddTransient<IValidator<RegisterRequest>, RegisterValidator>();
+            //services.AddTransient<IValidator<ProductCreateRequest>, ManageProductCreateValidator>();
+
+            // Validate AddFluent Validation
+            services.AddControllers().AddFluentValidation(fluVd =>
+            {
+                // Đăng kí tất cả các validate cùng Asembly
+                fluVd.RegisterValidatorsFromAssemblyContaining<LoginRequestValidator>();
+            });
+
             // Thêm service cho swagger
             services.AddSwaggerGen(c =>
            {
