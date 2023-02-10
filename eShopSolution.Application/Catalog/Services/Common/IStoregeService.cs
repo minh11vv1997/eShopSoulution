@@ -9,7 +9,9 @@ namespace eShopSolution.Application.Catalog.Services.Common
     public interface IStoregeService
     {
         string GetFileUrl(string fileName);
+
         Task SaveFileAsync(Stream mediaBinaryStream, string fileName);
+
         Task DeleteFileAsync(string fileName);
     }
 }
