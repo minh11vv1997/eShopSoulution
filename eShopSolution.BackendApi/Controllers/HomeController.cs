@@ -20,7 +20,8 @@ namespace eShopSolution.BackendApi.Controllers
 
         public IActionResult Index()
         {
-            return Ok();
+            var user = User.Identity.Name;
+            return View();
         }
 
       
