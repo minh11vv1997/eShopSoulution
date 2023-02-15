@@ -7,9 +7,9 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace eShopSolution.Application.Catalog.Services.ProductAdmin
+namespace eShopSolution.Application.Catalog.Services.Products
 {
-    public interface IManageProductService
+    public interface IProductService
     {
         Task<int> Create(ProductCreateRequest requestCr);
 
@@ -39,5 +39,10 @@ namespace eShopSolution.Application.Catalog.Services.ProductAdmin
         Task<List<ProductImageViewModel>> GetListImage(int productImagesId);
 
         Task<ProductImageViewModel> GetImageById(int productImagesId);
+
+        // Phần Iterface của client cho trang ngoài.
+        Task<PagedResult<ProductViewModel>> GetAllByCategoryId(string languageId, GetPublicProductPagingRequest request);
+
+        Task<List<ProductViewModel>> GetAll(string languageId);
     }
 }

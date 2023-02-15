@@ -1,4 +1,5 @@
-﻿using eShopSolution.ViewModels.Users;
+﻿using eShopSolution.ViewModels.CommentDto;
+using eShopSolution.ViewModels.Users;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -11,5 +12,7 @@ namespace eShopSolution.Application.Catalog.Services.Users
         Task<string> Authencate(LoginRequest request);
 
         Task<bool> Register(RegisterRequest request);
+
+        Task<PagedResult<UserViewModel>> GetUserPagging(GetUserPagingRequest request);
     }
 }

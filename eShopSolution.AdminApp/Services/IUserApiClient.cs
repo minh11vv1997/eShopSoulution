@@ -1,4 +1,5 @@
-﻿using eShopSolution.ViewModels.Users;
+﻿using eShopSolution.ViewModels.CommentDto;
+using eShopSolution.ViewModels.Users;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,5 +10,7 @@ namespace eShopSolution.AdminApp.Services
     public interface IUserApiClient
     {
         Task<string> Authenticate(LoginRequest request);
+
+        Task<PagedResult<UserViewModel>> GetUserPaging(GetUserPagingRequest request);
     }
 }

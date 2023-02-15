@@ -1,7 +1,5 @@
-﻿using eShopSolution.Application.Catalog.Products;
-using eShopSolution.Application.Catalog.Services.Common;
-using eShopSolution.Application.Catalog.Services.ProductAdmin;
-using eShopSolution.Application.Catalog.Services.Productclient;
+﻿using eShopSolution.Application.Catalog.Services.Common;
+using eShopSolution.Application.Catalog.Services.Products;
 using eShopSolution.Application.Catalog.Services.Users;
 using eShopSolution.Data.EF;
 using eShopSolution.Data.Entities;
@@ -49,8 +47,7 @@ namespace eShopSolution.BackendApi
                 .AddEntityFrameworkStores<EShopDbContext>()
                 .AddDefaultTokenProviders();
             //Tạo Dependency Injection để tiêm phụ thuộc ở tầng service
-            services.AddTransient<IPublicProductService, PublicProductService>();
-            services.AddTransient<IManageProductService, ManageProductService>();
+            services.AddTransient<IProductService, ProductService>();
             services.AddTransient<IStoregeService, FileStorageService>();
 
             // Login JWT

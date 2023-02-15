@@ -2,6 +2,7 @@
 using eShopSolution.ViewModels.Users;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Logging;
@@ -27,15 +28,26 @@ namespace eShopSolution.AdminApp.Controllers
             _configuration = configuration;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index(string keyword, int pageIndex = 1, int pageSize = 10)
         {
-            return View();
+            // Lấy ra các Token từ cookei ở bên backend__API
+            var sessions = HttpContext.Session.GetString("Token");
+            var request = new GetUserPagingRequest()
+            {
+                BearerToken = sessions,
+                Keyword = keyword,
+                PageIndex = pageIndex,
+                PageSize = pageSize
+            };
+            var data = await _userApiClient.GetUserPaging(request);
+            return View(data);
         }
 
         [HttpGet]
         public async Task<IActionResult> Login()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            HttpContext.Session.Remove("Token");
             return View();
         }
 
@@ -46,6 +58,9 @@ namespace eShopSolution.AdminApp.Controllers
             {
                 return View(ModelState);
             }
+            if (request.RemeberMe == true)
+            {
+            }
             var token = await _userApiClient.Authenticate(request);
             // Chuyển tokens sang userPrincinpal
             var userPrincipal = this.ValidateToken(token);
@@ -54,6 +69,7 @@ namespace eShopSolution.AdminApp.Controllers
                 ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(10),
                 IsPersistent = true
             };
+            HttpContext.Session.SetString("Token", token); // xét lại token
             await HttpContext.SignInAsync(
                 CookieAuthenticationDefaults.AuthenticationScheme,
                 userPrincipal,
