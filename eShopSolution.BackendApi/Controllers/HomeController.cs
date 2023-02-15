@@ -1,4 +1,5 @@
 ﻿using eShopSolution.BackendApi.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -20,10 +21,7 @@ namespace eShopSolution.BackendApi.Controllers
 
         public IActionResult Index()
         {
-            var user = User.Identity.Name;
-            return View();
+            return Content("Da goi dc api");
         }
-
-      
     }
 }
