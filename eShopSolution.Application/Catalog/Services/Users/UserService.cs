@@ -49,7 +49,8 @@ namespace eShopSolution.Application.Catalog.Services.Users
             {
                 new Claim(ClaimTypes.Email,user.Email),
                 new Claim(ClaimTypes.GivenName,user.FirstName),
-                new Claim(ClaimTypes.Role , string.Join(";",roles))
+                new Claim(ClaimTypes.Role , string.Join(";",roles)),
+                new Claim(ClaimTypes.Name,request.UserName)
             };
             // Mã hóa user bằng JWT
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Tokens:Key"]));
