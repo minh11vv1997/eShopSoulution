@@ -28,6 +28,7 @@ namespace eShopSolution.AdminApp
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddHttpClient();
+
             //Add thêm authentication cho hệ thống bắt buộc phải đăng nhập
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(
                 option =>
@@ -39,6 +40,11 @@ namespace eShopSolution.AdminApp
             {
                 // Đăng kí tất cả các validate cùng Asembly
                 fluVd.RegisterValidatorsFromAssemblyContaining<LoginRequestValidator>();
+            });
+            // Add session để lấy đc header của jwt
+            services.AddSession(option =>
+            {
+                option.IdleTimeout = TimeSpan.FromMinutes(30);
             });
             services.AddTransient<IUserApiClient, UserApiClient>();
         }
@@ -61,6 +67,8 @@ namespace eShopSolution.AdminApp
 
             app.UseAuthentication();
             app.UseRouting();
+
+            app.UseSession(); // Để sử dụng AddSession lấy header của jwt
 
             app.UseAuthorization();
 

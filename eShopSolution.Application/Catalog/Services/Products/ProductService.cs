@@ -1,5 +1,4 @@
 ﻿using eShopSolution.Application.Catalog.Services.Common;
-using eShopSolution.Application.Catalog.Services.ProductAdmin;
 using eShopSolution.Data.EF;
 using eShopSolution.Data.Entities;
 using eShopSolution.ViewModels.CommentDto;
@@ -16,14 +15,14 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace eShopSolution.Application.Catalog.Products
+namespace eShopSolution.Application.Catalog.Services.Products
 {
-    public class ManageProductService : IManageProductService
+    public class ProductService : IProductService
     {
         private readonly EShopDbContext _context;
         private readonly IStoregeService _storegeService;
 
-        public ManageProductService(EShopDbContext context, IStoregeService storegeService)
+        public ProductService(EShopDbContext context, IStoregeService storegeService)
         {
             _context = context;
             _storegeService = storegeService;
@@ -62,7 +61,7 @@ namespace eShopSolution.Application.Catalog.Products
                         Caption = "Thumbnail image",
                         DateCreated = DateTime.Now,
                         FileSize = requestCr.ThumbnailImage.Length,
-                        ImagePath = await this.SaveFile(requestCr.ThumbnailImage),
+                        ImagePath = await SaveFile(requestCr.ThumbnailImage),
                         IsDefault = true,
                         SortOrder = 1,
                     }
@@ -99,7 +98,7 @@ namespace eShopSolution.Application.Catalog.Products
                 if (thumbnailImage != null)
                 {
                     thumbnailImage.FileSize = requestUp.ThumbnailImage.Length;
-                    thumbnailImage.ImagePath = await this.SaveFile(requestUp.ThumbnailImage);
+                    thumbnailImage.ImagePath = await SaveFile(requestUp.ThumbnailImage);
                     _context.ProductImages.Update(thumbnailImage);
                 }
             }
@@ -206,7 +205,7 @@ namespace eShopSolution.Application.Catalog.Products
             };
             if (requestCrIm.ImageFile != null)
             {
-                productImage.ImagePath = await this.SaveFile(requestCrIm.ImageFile);
+                productImage.ImagePath = await SaveFile(requestCrIm.ImageFile);
                 productImage.FileSize = requestCrIm.ImageFile.Length;
             }
             _context.ProductImages.Add(productImage);
@@ -228,7 +227,7 @@ namespace eShopSolution.Application.Catalog.Products
             if (requestUpm == null) throw new EShopException($"Khong tim thay anh san pham : {imageId}");
             if (requestUpm.ImageFile != null)
             {
-                productImg.ImagePath = await this.SaveFile(requestUpm.ImageFile);
+                productImg.ImagePath = await SaveFile(requestUpm.ImageFile);
                 productImg.FileSize = requestUpm.ImageFile.Length;
             }
             _context.ProductImages.Update(productImg);
@@ -292,6 +291,79 @@ namespace eShopSolution.Application.Catalog.Products
                 ViewCount = product.ViewCount
             };
             return viewmodelProduct;
+        }
+
+        public async Task<List<ProductViewModel>> GetAll(string languageId)
+        {
+            // 1: Select và kết nối
+            var query = from product in _context.Products
+                        join productTranslition in _context.ProductTranslations on product.Id equals productTranslition.ProductId
+                        join productCategory in _context.ProductInCategories on product.Id equals productCategory.ProductId
+                        join category in _context.Categories on product.Id equals category.Id
+                        where productTranslition.LanguageId == languageId
+                        select new { product, productTranslition, productCategory };
+
+            var data = await query.Select(sp => new ProductViewModel()
+            {
+                Id = sp.product.Id,
+                Name = sp.productTranslition.Name,
+                DateCreated = sp.product.DateCreated,
+                Description = sp.productTranslition.Description,
+                Details = sp.productTranslition.Details,
+                LanguageId = sp.productTranslition.LanguageId,
+                OriginalPrice = sp.product.OriginalPrice,
+                Price = sp.product.Price,
+                SeoAlias = sp.productTranslition.SeoAlias,
+                SeoDescription = sp.productTranslition.SeoDescription,
+                SeoTitle = sp.productTranslition.SeoTitle,
+                Stock = sp.product.Stock,
+                ViewCount = sp.product.ViewCount
+            }).ToListAsync();
+            return data;
+        }
+
+        public async Task<PagedResult<ProductViewModel>> GetAllByCategoryId(string languageId, GetPublicProductPagingRequest request)
+        {
+            // 1: Select và kết nối
+            var query = from product in _context.Products
+                        join productTranslition in _context.ProductTranslations on product.Id equals productTranslition.ProductId
+                        join productCategory in _context.ProductInCategories on product.Id equals productCategory.ProductId
+                        join category in _context.Categories on product.Id equals category.Id
+                        where productTranslition.LanguageId == languageId
+                        select new { product, productTranslition, productCategory };
+
+            // Lọc dữ liệu cần tìm kiếm
+            if (request.CategoryId.HasValue && request.CategoryId.Value > 0)
+            {
+                query = query.Where(p => p.productCategory.CategoryId == request.CategoryId);
+            }
+            // 3: Paging
+            int totalRow = await query.CountAsync();
+            var data = await query.Skip((request.PageIndex - 1) * request.PageSize)
+                                  .Take(request.PageSize)
+                                  .Select(sp => new ProductViewModel()
+                                  {
+                                      Id = sp.product.Id,
+                                      Name = sp.productTranslition.Name,
+                                      DateCreated = sp.product.DateCreated,
+                                      Description = sp.productTranslition.Description,
+                                      Details = sp.productTranslition.Details,
+                                      LanguageId = sp.productTranslition.LanguageId,
+                                      OriginalPrice = sp.product.OriginalPrice,
+                                      Price = sp.product.Price,
+                                      SeoAlias = sp.productTranslition.SeoAlias,
+                                      SeoDescription = sp.productTranslition.SeoDescription,
+                                      SeoTitle = sp.productTranslition.SeoTitle,
+                                      Stock = sp.product.Stock,
+                                      ViewCount = sp.product.ViewCount
+                                  }).ToListAsync();
+            // 4: Select and projection
+            var pagedResult = new PagedResult<ProductViewModel>()
+            {
+                TotaRecord = totalRow,
+                Item = data
+            };
+            return pagedResult;
         }
     }
 }
