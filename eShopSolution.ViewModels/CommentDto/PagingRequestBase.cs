@@ -4,7 +4,7 @@ using System.Text;
 
 namespace eShopSolution.ViewModels.CommentDto
 {
-    public class PagingRequestBase : RequestBase
+    public class PagingRequestBase
     {
         public int PageIndex { get; set; }
 
