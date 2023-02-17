@@ -31,9 +31,9 @@ namespace eShopSolution.BackendApi.Controllers
                 return BadRequest(ModelState);
             }
             var resultToken = await _userService.Authencate(request);
-            if (string.IsNullOrEmpty(resultToken))
+            if (string.IsNullOrEmpty(resultToken.ResultObj))
             {
-                return BadRequest("UserName or passWord is incorrect");
+                return BadRequest(resultToken);
             }
             return Ok(resultToken);
         }
@@ -47,11 +47,27 @@ namespace eShopSolution.BackendApi.Controllers
                 return BadRequest(ModelState);
             }
             var resultToken = await _userService.Register(request);
-            if (resultToken)
+            if (!resultToken.IsSuccessed)
             {
-                return BadRequest("Register is unsuccessfull");
+                return BadRequest(resultToken);
             }
-            return Ok();
+            return Ok(resultToken);
+        }
+
+        //PUT : https:localhos/api/users/id
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Edit(Guid id, [FromBody] UserUpdateRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            var resultToken = await _userService.EditUser(id, request);
+            if (!resultToken.IsSuccessed)
+            {
+                return BadRequest(resultToken);
+            }
+            return Ok(resultToken);
         }
 
         // https://localhost:44351/api/user/paging?pageInde=1&pageSize=10&Keyword=
@@ -59,6 +75,14 @@ namespace eShopSolution.BackendApi.Controllers
         public async Task<IActionResult> GetAllPaging([FromQuery] GetUserPagingRequest request)
         {
             var users = await _userService.GetUserPagging(request);
+            return Ok(users);
+        }
+
+        //Get ByID để thực hiện update, delete
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(Guid id)
+        {
+            var users = await _userService.GetByIdUser(id);  // trả về UserViewModel
             return Ok(users);
         }
     }

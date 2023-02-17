@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace eShopSolution.ViewModels.Users
+namespace eShopSolution.ViewModels.Users.Validators
 {
     public class RegisterValidator : AbstractValidator<RegisterRequest>
     {
