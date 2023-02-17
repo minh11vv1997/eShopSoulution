@@ -122,7 +122,9 @@ namespace eShopSolution.Application.Catalog.Services.Users
             // 4: Select and projection
             var pagedResult = new PagedResult<UserViewModel>()
             {
-                TotaRecord = totalRow,
+                TotaRecords = totalRow,
+                PageIndex = request.PageIndex,
+                PageSize = request.PageSize,
                 Item = data
             };
             return new ApiSuccessResult<PagedResult<UserViewModel>>(pagedResult);
@@ -164,7 +166,8 @@ namespace eShopSolution.Application.Catalog.Services.Users
                 Email = userId.Email,
                 Dob = userId.Dob,
                 Id = userId.Id,
-                PhoneNumber = userId.PhoneNumber
+                PhoneNumber = userId.PhoneNumber,
+                UserName = userId.UserName
             };
             return new ApiSuccessResult<UserViewModel>(userVM);
         }

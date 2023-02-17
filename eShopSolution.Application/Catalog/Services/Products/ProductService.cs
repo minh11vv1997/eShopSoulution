@@ -179,7 +179,9 @@ namespace eShopSolution.Application.Catalog.Services.Products
             //B4: Select projection
             var pageResult = new PagedResult<ProductViewModel>()
             {
-                TotaRecord = totalRow,
+                TotaRecords = totalRow,
+                PageIndex = request.PageIndex,
+                PageSize = request.PageSize,
                 Item = data
             };
             return pageResult;
@@ -360,7 +362,9 @@ namespace eShopSolution.Application.Catalog.Services.Products
             // 4: Select and projection
             var pagedResult = new PagedResult<ProductViewModel>()
             {
-                TotaRecord = totalRow,
+                TotaRecords = totalRow,
+                PageIndex = request.PageIndex,
+                PageSize = request.PageSize,
                 Item = data
             };
             return pagedResult;
