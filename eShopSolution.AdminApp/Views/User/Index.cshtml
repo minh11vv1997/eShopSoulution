@@ -4,6 +4,7 @@
 @{
     ViewData["Title"] = "Danh sách người dùng";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    var keyword = ViewData["Keyword"];
 }
 <div class="container-fluid px-4">
     <h1 class="mt-4">Danh sách người dùng</h1>
@@ -13,7 +14,24 @@
     </ol>
     <div class="card mb-4">
         <div class="card-header">
-            <a class="btn btn-success" asp-action="Create" asp-controller="User">Tạo mới user</a>
+            <div class="row">
+                <div class="col-md-2 col-md-2 col-sm-12">
+                    <a class="btn btn-success" asp-action="Create" asp-controller="User">Tạo mới user</a>
+                </div>
+                <div class="col-md-10 col-md-10 col-sm-12">
+                    <form asp-action="Index" method="get">
+                        <div class="row btn__search" style="align-items:center;">
+                            <div class="col-md-10" style="max-width:900px;">
+                                <input type="text" value="@keyword" name="keyword" class="form-control"/>
+                            </div>
+                            <div class="col-md-2">
+                                <button type="submit">Tìm kiếm</button>
+                                <button type="button" onclick="window.location.href='/User/Index'" class="btn-dark">Reset</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
         <div class="card-body">
             <table class="table table-bordered">
