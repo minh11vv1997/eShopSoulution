@@ -56,7 +56,7 @@
         @if (Model.PageIndex != finishIndex)
         {
             <li class="page-item">
-                <a class="page-link" href="@urlTemplate.Replace("{0}",(Model.PageCount + 1).ToString())" title="@Model.PageCount.ToString()">Cuối</a>
+                <a class="page-link" href="@urlTemplate.Replace("{0}",(Model.PageIndex + 1).ToString())" title="@Model.PageCount.ToString()">Cuối</a>
             </li>
             <li class="page-item">
                 <a class="page-link" href="@urlTemplate.Replace("{0}",Model.PageCount.ToString())">Sau</a>
