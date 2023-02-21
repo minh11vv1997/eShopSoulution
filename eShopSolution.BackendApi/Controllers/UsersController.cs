@@ -92,5 +92,20 @@ namespace eShopSolution.BackendApi.Controllers
             var users = await _userService.Delete(id);  // trả về UserViewModel
             return Ok(users);
         }
+
+        [HttpPut("{id}/roles")]
+        public async Task<IActionResult> RoleAssign(Guid id, [FromBody] RoleAssignRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            var resultToken = await _userService.RoleAssign(id, request);
+            if (!resultToken.IsSuccessed)
+            {
+                return BadRequest(resultToken);
+            }
+            return Ok(resultToken);
+        }
     }
 }
