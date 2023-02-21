@@ -6,6 +6,15 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
     var keyword = ViewData["Keyword"];
 }
+@section Scripts{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            setTimeout(function () {
+                $('#msgAlert').fadeOut();
+            }, 2000);
+        });
+    </script>
+}
 <div class="container-fluid px-4">
     <h1 class="mt-4">Danh sách người dùng</h1>
     <ol class="breadcrumb mb-4">
@@ -22,7 +31,7 @@
                     <form asp-action="Index" method="get">
                         <div class="row btn__search" style="align-items:center;">
                             <div class="col-md-10" style="max-width:900px;">
-                                <input type="text" value="@keyword" name="keyword" class="form-control"/>
+                                <input type="text" value="@keyword" name="keyword" class="form-control" />
                             </div>
                             <div class="col-md-2">
                                 <button type="submit">Tìm kiếm</button>
@@ -34,6 +43,14 @@
             </div>
         </div>
         <div class="card-body">
+            <div class="row">
+                @if (ViewBag.SuccessMSg != null)
+                {
+                    <div id="msgAlert" class="alert alert-success" role="alert">
+                        @ViewBag.SuccessMSg
+                    </div>
+                }
+            </div>
             <table class="table table-bordered">
                 <thead>
                     <tr>
@@ -75,9 +92,10 @@
                                 @Html.DisplayFor(modelItem => item.Email)
                             </td>
                             <td>
-                                @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
-                                @Html.ActionLink("Details", "Details", new { id = item.Id }) |
-                                @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+                                @Html.ActionLink("Sửa", "Edit", new { id = item.Id }) |
+                                @Html.ActionLink("Xem thông tin", "Details", new { id = item.Id }) |
+                                @Html.ActionLink("Xóa", "Delete", new { id = item.Id }) |
+                                @Html.ActionLink("Gán quyền", "RoleAssign", new { id = item.Id })
                             </td>
                         </tr>
                     }

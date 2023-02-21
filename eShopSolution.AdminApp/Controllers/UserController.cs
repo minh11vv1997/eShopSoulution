@@ -1,4 +1,5 @@
 ﻿using eShopSolution.AdminApp.Services;
+using eShopSolution.ViewModels.CommentDto;
 using eShopSolution.ViewModels.Users;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
@@ -15,10 +16,14 @@ namespace eShopSolution.AdminApp.Controllers
     {
         private readonly IUserApiClient _userApiClient;
         private readonly IConfiguration _configuration;
+        private readonly IRoleApiClient _roleApiClient;
 
-        public UserController(IUserApiClient userApiClient, IConfiguration configuration)
+        public UserController(IUserApiClient userApiClient,
+            IRoleApiClient roleApiClient,
+            IConfiguration configuration)
         {
             _userApiClient = userApiClient;
+            _roleApiClient = roleApiClient;
             _configuration = configuration;
         }
 
@@ -31,6 +36,10 @@ namespace eShopSolution.AdminApp.Controllers
                 PageSize = pageSize
             };
             ViewData["Keyword"] = keyword;
+            if (TempData["result"] != null)
+            {
+                ViewBag.SuccessMSg = TempData["result"];
+            }
             var data = await _userApiClient.GetUserPaging(request);
             return View(data.ResultObj);
         }
@@ -57,7 +66,10 @@ namespace eShopSolution.AdminApp.Controllers
             }
             var result = await _userApiClient.AddRegisterUser(register);
             if (result.IsSuccessed)
+            {
+                TempData["result"] = "Thêm mới người dùng thành công";
                 return RedirectToAction("Index");
+            }
             ModelState.AddModelError("", result.Message);
             return View(register);
         }
@@ -92,13 +104,16 @@ namespace eShopSolution.AdminApp.Controllers
             }
             var result = await _userApiClient.UpdateRegisterUser(request.Id, request);
             if (result.IsSuccessed)
+            {
+                TempData["result"] = "Cập nhật người dùng thành công";
                 return RedirectToAction("Index");
+            }
             ModelState.AddModelError("", result.Message);
             return View(result);
         }
 
         [HttpGet]
-        public async Task<IActionResult> Delete(Guid id)
+        public IActionResult Delete(Guid id)
         {
             var userDelete = new UserDeleteRequest()
             {
@@ -117,10 +132,54 @@ namespace eShopSolution.AdminApp.Controllers
             var result = await _userApiClient.Delete(request.Id);
             if (result.IsSuccessed)
             {
+                TempData["result"] = "Xóa thành công";
                 return RedirectToAction("Index");
             }
             ModelState.AddModelError("", result.Message);
             return View(request);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> RoleAssign(Guid id)
+        {
+            var roleAssignRequest = await GetRoleAssignRequest(id);
+            return View(roleAssignRequest);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> RoleAssign(RoleAssignRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View();
+            }
+            var result = await _userApiClient.RoleAssign(request.Id, request);
+            if (result.IsSuccessed)
+            {
+                TempData["result"] = "Cập nhật quyền thành công";
+                return RedirectToAction("Index");
+            }
+            ModelState.AddModelError("", result.Message);
+            var roleAssignRequest = await GetRoleAssignRequest(request.Id);
+
+            return View(roleAssignRequest);
+        }
+
+        private async Task<RoleAssignRequest> GetRoleAssignRequest(Guid id)
+        {
+            var userObj = await _userApiClient.GetByIdUser(id);
+            var roleObj = await _roleApiClient.GetAllRole();
+            var roleAssignRequest = new RoleAssignRequest();
+            foreach (var role in roleObj.ResultObj)
+            {
+                roleAssignRequest.Roles.Add(new SelectItem()
+                {
+                    Id = role.Id.ToString(),
+                    Name = role.Name,
+                    Selected = userObj.ResultObj.Roles.Contains(role.Name)
+                });
+            }
+            return roleAssignRequest;
         }
     }
 }
