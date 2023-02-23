@@ -1,4 +1,5 @@
 ﻿using eShopSolution.Application.Catalog.Services.Common;
+using eShopSolution.Application.Catalog.Services.Languages;
 using eShopSolution.Application.Catalog.Services.Products;
 using eShopSolution.Application.Catalog.Services.Roles;
 using eShopSolution.Application.Catalog.Services.Users;
@@ -57,6 +58,7 @@ namespace eShopSolution.BackendApi
             services.AddTransient<RoleManager<AppRole>, RoleManager<AppRole>>();
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IRoleService, RoleService>();
+            services.AddTransient<ILanguageService, LanguageService>();
 
             services.AddTransient<IValidator<LoginRequest>, LoginRequestValidator>();
             services.AddTransient<IValidator<RegisterRequest>, RegisterValidator>();

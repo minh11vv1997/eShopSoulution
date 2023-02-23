@@ -1,5 +1,6 @@
 ﻿using eShopSolution.AdminApp.Services;
 using eShopSolution.ViewModels.Users;
+using eShopSoulution.Utilities.Constants;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
@@ -59,7 +60,8 @@ namespace eShopSolution.AdminApp.Controllers
                 ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(10),
                 IsPersistent = true
             };
-            HttpContext.Session.SetString("Token", token.ResultObj); // xét lại token
+            HttpContext.Session.SetString(SystemConstants.AppSettings.DefaultLanguageId, _configuration["DefaultLanguageId"]);
+            HttpContext.Session.SetString(SystemConstants.AppSettings.Token, token.ResultObj); // xét lại token
             await HttpContext.SignInAsync(
                 CookieAuthenticationDefaults.AuthenticationScheme,
                 userPrincipal,
