@@ -137,24 +137,25 @@ namespace eShopSolution.Application.Catalog.Services.Products
             return await _context.SaveChangesAsync();
         }
 
-        public async Task<PagedResult<ProductViewModel>> GetAllPaging(GetManageProductPagingRequest request)
+        public async Task<ApiResult<PagedResult<ProductViewModel>>> GetAllPaging(GetManageProductPagingRequest request)
         {
             // B1: Select lấy dữ liệu
             var query = from p in _context.Products
                         join pt in _context.ProductTranslations on p.Id equals pt.ProductId
-                        join pic in _context.ProductInCategories on p.Id equals pic.ProductId
-                        join c in _context.Categories on pic.CategoryId equals c.Id
-                        where pt.Name.Contains(request.Keyword)
-                        select new { p, pt, pic };
+                        //join pic in _context.ProductInCategories on p.Id equals pic.ProductId
+                        //join c in _context.Categories on pic.CategoryId equals c.Id
+                        where pt.LanguageId == request.LanguageId
+
+                        select new { p, pt };
             //B2: Filter : Lọc ra điều kiện tìm kiếm
             if (!string.IsNullOrEmpty(request.Keyword))
             {
                 query = query.Where(x => x.pt.Name.Contains(request.Keyword));
             }
-            if (request.CateogoryIds.Count > 0)
-            {
-                query = query.Where(px => request.CateogoryIds.Contains(px.pic.CategoryId));
-            }
+            //if (request.CateogoryIds != null && request.CateogoryIds.Count > 0)
+            //{
+            //    query = query.Where(px => request.CateogoryIds.Contains(px.pic.CategoryId));
+            //}
             //B3 : Paging : phân trang
             int totalRow = await query.CountAsync();
             var data = await query.Skip((request.PageIndex - 1) * request.PageSize)
@@ -184,7 +185,7 @@ namespace eShopSolution.Application.Catalog.Services.Products
                 PageSize = request.PageSize,
                 Item = data
             };
-            return pageResult;
+            return new ApiSuccessResult<PagedResult<ProductViewModel>>(pageResult);
         }
 
         private async Task<string> SaveFile(IFormFile formFile)
@@ -368,6 +369,55 @@ namespace eShopSolution.Application.Catalog.Services.Products
                 Item = data
             };
             return pagedResult;
+        }
+
+        public async Task<PagedResult<ProductViewModel>> GetAllPagingClient(GetPublicProductPagingRequest request)
+        {
+            // B1: Select lấy dữ liệu
+            var query = from p in _context.Products
+                        join pt in _context.ProductTranslations on p.Id equals pt.ProductId
+                        join pic in _context.ProductInCategories on p.Id equals pic.ProductId
+                        join c in _context.Categories on pic.CategoryId equals c.Id
+                        select new { p, pt, pic };
+            //B2: Filter : Lọc ra điều kiện tìm kiếm
+            //if (!string.IsNullOrEmpty(request.Keyword))
+            //{
+            //    query = query.Where(x => x.pt.Name.Contains(request.Keyword));
+            //}
+            if (request.CategoryId > 0)
+            {
+                query = query.Where(px => request.CategoryId == px.pic.CategoryId);
+            }
+            //B3 : Paging : phân trang
+            int totalRow = await query.CountAsync();
+            var data = await query.Skip((request.PageIndex - 1) * request.PageSize)
+                            .Take(request.PageSize)
+                            .Select(sp => new ProductViewModel()
+                            {
+                                Id = sp.p.Id,
+                                Name = sp.pt.Name,
+                                DateCreated = sp.p.DateCreated,
+                                Description = sp.pt.Description,
+                                Details = sp.pt.Details,
+                                LanguageId = sp.pt.LanguageId,
+                                OriginalPrice = sp.p.OriginalPrice,
+                                Price = sp.p.Price,
+                                SeoAlias = sp.pt.SeoAlias,
+                                SeoDescription = sp.pt.SeoDescription,
+                                SeoTitle = sp.pt.SeoTitle,
+                                Stock = sp.p.Stock,
+                                ViewCount = sp.p.ViewCount
+                            }).ToListAsync();
+
+            //B4: Select projection
+            var pageResult = new PagedResult<ProductViewModel>()
+            {
+                TotaRecords = totalRow,
+                PageIndex = request.PageIndex,
+                PageSize = request.PageSize,
+                Item = data
+            };
+            return pageResult;
         }
     }
 }
