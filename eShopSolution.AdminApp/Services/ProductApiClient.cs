@@ -28,11 +28,12 @@ namespace eShopSolution.AdminApp.Services
             _configuration = configuration;
         }
 
-        public async Task<ApiResult<PagedResult<ProductViewModel>>> GetUserPagingProduct(GetManageProductPagingRequest request)
+        public async Task<PagedResult<ProductViewModel>> GetPagingProduct(GetManageProductPagingRequest request)
         {
-            var data = await base.GetAsync<ApiResult<PagedResult<ProductViewModel>>>($"/api/Products/paging?pageIndex={request.PageIndex}" +
-                  $"&pageSize={request.PageSize}&keyword={request.Keyword}&languageId={request.LanguageId}");
-            return data;
+            return await base.GetAsync<PagedResult<ProductViewModel>>($"/api/Products/paging?pageIndex={request.PageIndex}" +
+                  $"&pageSize={request.PageSize}&keyword={request.Keyword}&languageId={request.LanguageId}" +
+                  $"&categoryId={request.CateogoryId}");
+            //return data;
         }
 
         public async Task<bool> CreateProduct(ProductCreateRequest request)

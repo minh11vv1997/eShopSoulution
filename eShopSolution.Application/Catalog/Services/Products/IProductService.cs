@@ -28,7 +28,7 @@ namespace eShopSolution.Application.Catalog.Services.Products
         // Task<List<ProductViewModel>> GetAll();
         Task<PagedResult<ProductViewModel>> GetAllPagingClient(GetPublicProductPagingRequest request);
 
-        Task<ApiResult<PagedResult<ProductViewModel>>> GetAllPaging(GetManageProductPagingRequest request);
+        Task<PagedResult<ProductViewModel>> GetAllPaging(GetManageProductPagingRequest request);
 
         // Thêm mới ảnh
         Task<int> AddImage(int productId, ProductImageCreateRequest requestCrIm);

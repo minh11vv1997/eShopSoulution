@@ -44,6 +44,22 @@ namespace eShopSolution.AdminApp.Services
             return JsonConvert.DeserializeObject<TRespont>(body);
         }
 
+        protected async Task<List<T>> GetListAsync<T>(string url, bool requiredLogin = false)
+        {
+            var session = _httpContextAccessor.HttpContext.Session.GetString(SystemConstants.AppSettings.Token);
+            var client = _httpClientFactory.CreateClient();
+            client.BaseAddress = new Uri(_configuration["BaseAddress"]);
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", session);
+            var response = await client.GetAsync(url);
+            var body = await response.Content.ReadAsStringAsync();
+            if (response.IsSuccessStatusCode)
+            {
+                var data = (List<T>)JsonConvert.DeserializeObject(body, typeof(List<T>));
+                return data;
+            }
+            throw new Exception(body);
+        }
+
         protected async Task<TRespont> GetAsync<TRespont>(GetUserPagingRequest request)
         {
             var session = _httpContextAccessor.HttpContext.Session.GetString(SystemConstants.AppSettings.Token);
