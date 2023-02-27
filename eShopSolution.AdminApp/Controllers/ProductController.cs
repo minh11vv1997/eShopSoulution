@@ -1,11 +1,13 @@
 ﻿using eShopSolution.AdminApp.Services;
 using eShopSolution.ViewModels.ProductModels;
 using eShopSoulution.Utilities.Constants;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -15,11 +17,14 @@ namespace eShopSolution.AdminApp.Controllers
     {
         private readonly IProductApiClient _productApiClinet;
         private readonly IConfiguration _configuration;
+        private readonly IWebHostEnvironment _environment;
 
         public ProductController(IProductApiClient productApiClinet,
+            IWebHostEnvironment environment,
             IConfiguration configuration)
         {
             _productApiClinet = productApiClinet;
+            _environment = environment;
             _configuration = configuration;
         }
 
@@ -64,6 +69,22 @@ namespace eShopSolution.AdminApp.Controllers
             }
             ModelState.AddModelError("", "Thêm sản phẩm thất bại");
             return View(result);
+        }
+
+        [HttpPost]
+        public ActionResult UpLoadImage(List<IFormFile> file)
+        {
+            var filePath = "";
+            foreach (IFormFile photo in Request.Form.Files)
+            {
+                string serverMapPath = Path.Combine(_environment.WebRootPath, "Images", photo.FileName);
+                using (var stream = new FileStream(serverMapPath, FileMode.Create))
+                {
+                    photo.CopyTo(stream);
+                }
+                filePath = "https://localhost:44351" + "/Images/" + photo.FileName;
+            }
+            return Json(new { url = filePath });
         }
     }
 }
