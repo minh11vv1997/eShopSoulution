@@ -177,5 +177,20 @@ namespace eShopSolution.BackendApi.Controllers
             }
             return Ok();
         }
+
+        [HttpPut("{id}/categories")]
+        public async Task<IActionResult> CategoryAssign(int id, [FromBody] CategoryAssignRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            var resultToken = await _productService.CategoryAssign(id, request);
+            if (!resultToken)
+            {
+                return BadRequest(resultToken);
+            }
+            return Ok(resultToken);
+        }
     }
 }

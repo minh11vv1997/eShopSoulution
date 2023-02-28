@@ -45,5 +45,7 @@ namespace eShopSolution.Application.Catalog.Services.Products
         Task<PagedResult<ProductViewModel>> GetAllByCategoryId(string languageId, GetPublicProductPagingRequest request);
 
         Task<List<ProductViewModel>> GetAll(string languageId);
+
+        Task<bool> CategoryAssign(int id, CategoryAssignRequest request);
     }
 }

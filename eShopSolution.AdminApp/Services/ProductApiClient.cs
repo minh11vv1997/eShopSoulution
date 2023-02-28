@@ -3,12 +3,14 @@ using eShopSolution.ViewModels.ProductModels;
 using eShopSoulution.Utilities.Constants;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace eShopSolution.AdminApp.Services
@@ -69,6 +71,30 @@ namespace eShopSolution.AdminApp.Services
             // Gửi request đi.
             var reponse = await client.PostAsync($"/api/Products", requestContent);
             return reponse.IsSuccessStatusCode;
+        }
+
+        public async Task<bool> CategoryAssign(int id, CategoryAssignRequest request)
+        {
+            var session = _httpContextAccessor.HttpContext.Session.GetString(SystemConstants.AppSettings.Token);
+            var client = _httpClientFactory.CreateClient();
+            client.BaseAddress = new Uri(_configuration["BaseAddress"]);
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", session);
+
+            var json = JsonConvert.SerializeObject(request);
+            var httpContext = new StringContent(json, Encoding.UTF8, "application/json");
+            var response = await client.PutAsync($"/api/products/{id}/categories", httpContext);
+            var result = await response.Content.ReadAsStringAsync();
+            if (response.IsSuccessStatusCode)
+            {
+                return JsonConvert.DeserializeObject<bool>(result);
+            }
+            return JsonConvert.DeserializeObject<bool>(result);
+        }
+
+        public async Task<ProductViewModel> GetByIdCategory(int id, string languageId)
+        {
+            var data = await GetAsync<ProductViewModel>($"/api/Products/{id}/{languageId}");
+            return data;
         }
     }
 }
