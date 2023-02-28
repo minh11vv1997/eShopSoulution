@@ -30,10 +30,10 @@ namespace eShopSolution.AdminApp.Services
 
         public async Task<PagedResult<ProductViewModel>> GetPagingProduct(GetManageProductPagingRequest request)
         {
-            return await base.GetAsync<PagedResult<ProductViewModel>>($"/api/Products/paging?pageIndex={request.PageIndex}" +
+            var data = await base.GetAsync<PagedResult<ProductViewModel>>($"/api/Products/paging?pageIndex={request.PageIndex}" +
                   $"&pageSize={request.PageSize}&keyword={request.Keyword}&languageId={request.LanguageId}" +
-                  $"&categoryId={request.CateogoryId}");
-            //return data;
+                  $"&categoryId={request.CategoryId}");
+            return data;
         }
 
         public async Task<bool> CreateProduct(ProductCreateRequest request)

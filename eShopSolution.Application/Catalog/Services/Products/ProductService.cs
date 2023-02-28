@@ -151,9 +151,9 @@ namespace eShopSolution.Application.Catalog.Services.Products
             {
                 query = query.Where(x => x.pt.Name.Contains(request.Keyword));
             }
-            if (request.CateogoryId != null && request.CateogoryId != 0)
+            if (request.CategoryId != null && request.CategoryId != 0)
             {
-                query = query.Where(p => p.pic.CategoryId == request.CateogoryId);
+                query = query.Where(p => p.pic.CategoryId == request.CategoryId);
             }
             //B3 : Paging : phân trang
             int totalRow = await query.CountAsync();

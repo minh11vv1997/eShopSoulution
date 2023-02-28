@@ -33,7 +33,7 @@ namespace eShopSolution.AdminApp.Controllers
             var requestProduct = new GetManageProductPagingRequest()
             {
                 Keyword = keyword,
-                CateogoryId = categoryId,
+                CategoryId = categoryId,
                 PageIndex = pageIndex,
                 PageSize = pageSize,
                 LanguageId = languageId,
@@ -45,7 +45,8 @@ namespace eShopSolution.AdminApp.Controllers
             ViewBag.Categories = categories.Select(x => new SelectListItem()
             {
                 Text = x.Name,
-                Value = x.Id.ToString()
+                Value = x.Id.ToString(),
+                Selected = categoryId.HasValue && categoryId.Value == x.Id
             });
 
             if (TempData["result"] != null)
