@@ -1,13 +1,12 @@
 ﻿using eShopSolution.AdminApp.Services;
 using eShopSolution.ViewModels.ProductModels;
 using eShopSoulution.Utilities.Constants;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -16,35 +15,46 @@ namespace eShopSolution.AdminApp.Controllers
     public class ProductController : Controller
     {
         private readonly IProductApiClient _productApiClinet;
+        private readonly ICateroryApiClient _cateroryApiClient;
         private readonly IConfiguration _configuration;
-        private readonly IWebHostEnvironment _environment;
 
         public ProductController(IProductApiClient productApiClinet,
-            IWebHostEnvironment environment,
+            ICateroryApiClient cateroryApiClient,
             IConfiguration configuration)
         {
             _productApiClinet = productApiClinet;
-            _environment = environment;
+            _cateroryApiClient = cateroryApiClient;
             _configuration = configuration;
         }
 
-        public async Task<IActionResult> Index(string keyword, int pageIndex = 1, int pageSize = 10)
+        public async Task<IActionResult> Index(string keyword, int? categoryId, int pageIndex = 1, int pageSize = 10)
         {
             var languageId = HttpContext.Session.GetString(SystemConstants.AppSettings.DefaultLanguageId);
-            var request = new GetManageProductPagingRequest()
+            var requestProduct = new GetManageProductPagingRequest()
             {
                 Keyword = keyword,
+                CategoryId = categoryId,
                 PageIndex = pageIndex,
                 PageSize = pageSize,
-                LanguageId = languageId
+                LanguageId = languageId,
             };
             ViewData["Keyword"] = keyword;
+
+            //Truyền List Category
+            var categories = await _cateroryApiClient.GetAllCategory(languageId);
+            ViewBag.Categories = categories.Select(x => new SelectListItem()
+            {
+                Text = x.Name,
+                Value = x.Id.ToString(),
+                Selected = categoryId.HasValue && categoryId.Value == x.Id
+            });
+
             if (TempData["result"] != null)
             {
                 ViewBag.SuccessMSg = TempData["result"];
             }
-            var data = await _productApiClinet.GetUserPagingProduct(request);
-            return View(data.ResultObj);
+            var data = await _productApiClinet.GetPagingProduct(requestProduct);
+            return View(data);
         }
 
         [HttpGet]
@@ -69,22 +79,6 @@ namespace eShopSolution.AdminApp.Controllers
             }
             ModelState.AddModelError("", "Thêm sản phẩm thất bại");
             return View(result);
-        }
-
-        [HttpPost]
-        public ActionResult UpLoadImage(List<IFormFile> file)
-        {
-            var filePath = "";
-            foreach (IFormFile photo in Request.Form.Files)
-            {
-                string serverMapPath = Path.Combine(_environment.WebRootPath, "Images", photo.FileName);
-                using (var stream = new FileStream(serverMapPath, FileMode.Create))
-                {
-                    photo.CopyTo(stream);
-                }
-                filePath = "https://localhost:44351" + "/Images/" + photo.FileName;
-            }
-            return Json(new { url = filePath });
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using eShopSolution.Application.Catalog.Services.Common;
+﻿using eShopSolution.Application.Catalog.Services.Categories;
+using eShopSolution.Application.Catalog.Services.Common;
 using eShopSolution.Application.Catalog.Services.Languages;
 using eShopSolution.Application.Catalog.Services.Products;
 using eShopSolution.Application.Catalog.Services.Roles;
@@ -50,6 +51,7 @@ namespace eShopSolution.BackendApi
             //Tạo Dependency Injection để tiêm phụ thuộc ở tầng service
             services.AddTransient<IProductService, ProductService>();
             services.AddTransient<IStoregeService, FileStorageService>();
+            services.AddTransient<ICategoryService, CategoryService>();
 
             // Login JWT
 
