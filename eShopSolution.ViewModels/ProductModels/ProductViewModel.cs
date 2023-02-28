@@ -1,4 +1,5 @@
-﻿using System;
+﻿using eShopSolution.ViewModels.CategoryModel;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -8,6 +9,7 @@ namespace eShopSolution.ViewModels.ProductModels
     {
         // Lấy các propertites để hiển thị lên của product
         public int Id { get; set; }
+
         public decimal Price { get; set; }
         public decimal OriginalPrice { get; set; }
         public int Stock { get; set; }
@@ -21,5 +23,6 @@ namespace eShopSolution.ViewModels.ProductModels
         public string SeoTitle { set; get; }
         public string SeoAlias { get; set; }
         public string LanguageId { set; get; }
+        public List<string> Categories { get; set; } = new List<string>();
     }
 }

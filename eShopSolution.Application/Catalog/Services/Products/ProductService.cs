@@ -142,8 +142,11 @@ namespace eShopSolution.Application.Catalog.Services.Products
             // B1: Select lấy dữ liệu
             var query = from p in _context.Products
                         join pt in _context.ProductTranslations on p.Id equals pt.ProductId
-                        join pic in _context.ProductInCategories on p.Id equals pic.ProductId
-                        join c in _context.Categories on pic.CategoryId equals c.Id
+                        // Sử dụng left join trong linq
+                        join pic in _context.ProductInCategories on p.Id equals pic.ProductId into p_leftjoin_pic
+                        from pic in p_leftjoin_pic.DefaultIfEmpty()
+                        join c in _context.Categories on pic.CategoryId equals c.Id into pic_leftjoin_c
+                        from c in pic_leftjoin_c.DefaultIfEmpty()
                         where pt.LanguageId == request.LanguageId
                         select new { p, pt, pic };
             //B2: Filter : Lọc ra điều kiện tìm kiếm
@@ -276,6 +279,12 @@ namespace eShopSolution.Application.Catalog.Services.Products
         {
             var product = await _context.Products.FindAsync(productId);
             var productTransilation = await _context.ProductTranslations.FirstOrDefaultAsync(x => x.ProductId == productId && x.LanguageId == languageId);
+            // Lay ra list category
+            var categories = await (from cate in _context.Categories
+                                    join cateTranslation in _context.CategoryTranslations on cate.Id equals cateTranslation.CategoryId
+                                    join productcategory in _context.ProductInCategories on cate.Id equals productcategory.CategoryId
+                                    where productcategory.ProductId == productId && cateTranslation.LanguageId == languageId
+                                    select cateTranslation.Name).ToListAsync();
 
             var viewmodelProduct = new ProductViewModel()
             {
@@ -290,7 +299,8 @@ namespace eShopSolution.Application.Catalog.Services.Products
                 SeoAlias = productTransilation != null ? productTransilation.SeoAlias : null,
                 SeoDescription = productTransilation != null ? productTransilation.SeoDescription : null,
                 Stock = product.Stock,
-                ViewCount = product.ViewCount
+                ViewCount = product.ViewCount,
+                Categories = categories
             };
             return viewmodelProduct;
         }
@@ -417,6 +427,35 @@ namespace eShopSolution.Application.Catalog.Services.Products
                 Item = data
             };
             return pageResult;
+        }
+
+        public async Task<bool> CategoryAssign(int id, CategoryAssignRequest request)
+        {
+            //B1 : Lấy ra user
+            var productId = await _context.Products.FindAsync(id);
+            if (productId == null)
+            {
+                throw new EShopException($"Khong tim thay danh mục sản phẩm {id}");
+            }
+            var removeCategory = request.Categories.Where(x => x.Selected == false).ToList();
+            foreach (var category in request.Categories)
+            {
+                var productInCategory = await _context.ProductInCategories
+                    .FirstOrDefaultAsync(x => x.CategoryId == int.Parse(category.Id) && x.ProductId == id);
+                if (productInCategory != null && category.Selected == false)
+                {
+                    _context.ProductInCategories.Remove(productInCategory);
+                }
+                else if (productInCategory == null && category.Selected == true)
+                {
+                    await _context.ProductInCategories.AddAsync(new ProductInCategory()
+                    {
+                        CategoryId = int.Parse(category.Id),
+                        ProductId = id
+                    });
+                }
+            }
+            return await _context.SaveChangesAsync() > 0;
         }
     }
 }
