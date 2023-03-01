@@ -1,4 +1,4 @@
-﻿using eShopSolution.AdminApp.Services;
+﻿using eShopSolution.ApiIntegration;
 using eShopSolution.ViewModels.CommentDto;
 using eShopSolution.ViewModels.Users;
 using Microsoft.AspNetCore.Authentication;

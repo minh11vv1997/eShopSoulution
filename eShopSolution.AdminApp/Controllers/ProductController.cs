@@ -1,4 +1,4 @@
-﻿using eShopSolution.AdminApp.Services;
+﻿using eShopSolution.ApiIntegration;
 using eShopSolution.ViewModels.CommentDto;
 using eShopSolution.ViewModels.ProductModels;
 using eShopSoulution.Utilities.Constants;
