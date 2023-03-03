@@ -3,6 +3,7 @@ using eShopSolution.Application.Catalog.Services.Common;
 using eShopSolution.Application.Catalog.Services.Languages;
 using eShopSolution.Application.Catalog.Services.Products;
 using eShopSolution.Application.Catalog.Services.Roles;
+using eShopSolution.Application.Catalog.Services.Slides;
 using eShopSolution.Application.Catalog.Services.Users;
 using eShopSolution.Data.EF;
 using eShopSolution.Data.Entities;
@@ -52,6 +53,7 @@ namespace eShopSolution.BackendApi
             services.AddTransient<IProductService, ProductService>();
             services.AddTransient<IStoregeService, FileStorageService>();
             services.AddTransient<ICategoryService, CategoryService>();
+            services.AddTransient<ISlideService, SlideService>();
 
             // Login JWT
 

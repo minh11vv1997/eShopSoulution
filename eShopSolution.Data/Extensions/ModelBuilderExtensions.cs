@@ -32,7 +32,7 @@ namespace eShopSolution.Data.Extensions
               },
             new Category()
             {
-                Id=2,
+                Id = 2,
                 IsShowOnHome = true,
                 ParenId = null,
                 SortOrder = 2,
@@ -53,7 +53,81 @@ namespace eShopSolution.Data.Extensions
                Price = 200000,
                Stock = 0,
                ViewCount = 0,
-           });
+               IsFeatured = true
+           },
+            new Product()
+            {
+                Id = 2,
+                DateCreated = DateTime.Now,
+                OriginalPrice = 200000,
+                Price = 300000,
+                Stock = 1,
+                ViewCount = 0,
+                IsFeatured = false
+            }
+           );
+            modelBuilder.Entity<ProductImage>().HasData(
+                new ProductImage()
+                {
+                    Id = 10,
+                    ProductId = 1,
+                    ImagePath = "/themes/images/products/b1.jpg",
+                    Caption = "Thumbnail image",
+                    IsDefault = true,
+                    SortOrder = 1,
+                    FileSize = 18759
+                },
+                new ProductImage()
+                {
+                    Id = 11,
+                    ProductId = 2,
+                    ImagePath = "/themes/images/products/b2.jpg",
+                    Caption = "Thumbnail image",
+                    IsDefault = true,
+                    SortOrder = 4,
+                    FileSize = 39972
+                },
+                 new ProductImage()
+                 {
+                     Id = 12,
+                     ProductId = 2,
+                     ImagePath = "/themes/images/products/6.jpg",
+                     Caption = "Thumbnail image",
+                     IsDefault = true,
+                     SortOrder = 4,
+                     FileSize = 39972
+                 },
+                   new ProductImage()
+                   {
+                       Id = 13,
+                       ProductId = 1,
+                       ImagePath = "/themes/images/products/7.jpg",
+                       Caption = "Thumbnail image",
+                       IsDefault = true,
+                       SortOrder = 4,
+                       FileSize = 5353
+                   },
+                   new ProductImage()
+                   {
+                       Id = 14,
+                       ProductId = 1,
+                       ImagePath = "/themes/images/products/9.jpg",
+                       Caption = "Thumbnail image",
+                       IsDefault = true,
+                       SortOrder = 4,
+                       FileSize = 231231
+                   },
+                   new ProductImage()
+                   {
+                       Id = 15,
+                       ProductId = 2,
+                       ImagePath = "/themes/images/products/8.jpg",
+                       Caption = "Thumbnail image",
+                       IsDefault = true,
+                       SortOrder = 4,
+                       FileSize = 231231
+                   }
+                );
             modelBuilder.Entity<ProductTranslation>().HasData(
                  new ProductTranslation()
                  {
@@ -78,7 +152,22 @@ namespace eShopSolution.Data.Extensions
                     SeoTitle = "Viet Tien Men T-Shirt",
                     Details = "Viet Tien Men T-Shirt",
                     Description = "Viet Tien Men T-Shirt"
-                });
+                },
+                 new ProductTranslation()
+                 {
+                     Id = 3,
+                     ProductId = 2,
+                     Name = "Torado T-Shirt",
+                     LanguageId = "vi",
+                     SeoAlias = "Torado-t-shirt",
+                     SeoDescription = "Torado Men T-Shirt",
+                     SeoTitle = "Torado Men T-Shirt",
+                     Details = "Torado Men T-Shirt",
+                     Description = "Torado Men T-Shirt"
+                 }
+
+                );
+
             modelBuilder.Entity<ProductInCategory>().HasData(
                 new ProductInCategory() { ProductId = 1, CategoryId = 1 }
                 );
@@ -92,10 +181,11 @@ namespace eShopSolution.Data.Extensions
              );
 
             // Thêm cho bảng admin
-            var roleId  = new Guid("D276B5EB-7E1D-4347-96BF-CE5931BDE593");
+            var roleId = new Guid("D276B5EB-7E1D-4347-96BF-CE5931BDE593");
             var adminId = new Guid("4FF07EC1-1521-4F74-92E8-B03F26A72A96");
             modelBuilder.Entity<AppRole>().HasData(
-                new AppRole {
+                new AppRole
+                {
                     Id = roleId,
                     Name = "admin",
                     NormalizedName = "admin",
@@ -110,11 +200,11 @@ namespace eShopSolution.Data.Extensions
                 Email = "minhvv@rikkeisoft.com",
                 NormalizedEmail = "minhvv@rikkeisoft.com",
                 EmailConfirmed = true,
-                PasswordHash = hasher.HashPassword(null,"123456a@A"),
+                PasswordHash = hasher.HashPassword(null, "123456a@A"),
                 SecurityStamp = string.Empty,
                 FirstName = "Minh",
                 LastName = "Vu",
-                Dob = new DateTime(2023,01,02)
+                Dob = new DateTime(2023, 01, 02)
             });
             modelBuilder.Entity<IdentityUserRole<Guid>>().HasData(new IdentityUserRole<Guid>
             {

@@ -10,8 +10,8 @@ using eShopSolution.Data.EF;
 namespace eShopSolution.Data.Migrations
 {
     [DbContext(typeof(EShopDbContext))]
-    [Migration("20230202093247_updatedatabase_productimg")]
-    partial class updatedatabase_productimg
+    [Migration("20230302042859_Initaial")]
+    partial class Initaial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -182,7 +182,7 @@ namespace eShopSolution.Data.Migrations
                         new
                         {
                             Id = new Guid("d276b5eb-7e1d-4347-96bf-ce5931bde593"),
-                            ConcurrencyStamp = "ed917bcb-8f80-46ef-a267-0c50e289eccd",
+                            ConcurrencyStamp = "d8d08634-d721-4154-86af-82e02e3c0f79",
                             Description = "Administrator role",
                             Name = "admin",
                             NormalizedName = "admin"
@@ -259,7 +259,7 @@ namespace eShopSolution.Data.Migrations
                         {
                             Id = new Guid("4ff07ec1-1521-4f74-92e8-b03f26a72a96"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "cdb3ef98-b3dd-497e-a9b9-a1c723b2aee2",
+                            ConcurrencyStamp = "a6064542-8cda-408f-bc3b-eb9b84e06be6",
                             Dob = new DateTime(2023, 1, 2, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "minhvv@rikkeisoft.com",
                             EmailConfirmed = true,
@@ -268,7 +268,7 @@ namespace eShopSolution.Data.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "minhvv@rikkeisoft.com",
                             NormalizedUserName = "admin",
-                            PasswordHash = "AQAAAAEAACcQAAAAENJvuRF2LcHrQf/amZql5tmh8U4LpEfCbHWtTIz1p6KX0xX4gYSkBqG75+FSNDr2Yw==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEJKn6mSTyW1o5+/sJUe+KuztH0kcZg23DMboIKnrn7QbMFBW67nq4g6B7y5VcmI/Bg==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "",
                             TwoFactorEnabled = false,
@@ -583,6 +583,9 @@ namespace eShopSolution.Data.Migrations
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("datetime2");
 
+                    b.Property<bool?>("IsFeatured")
+                        .HasColumnType("bit");
+
                     b.Property<decimal>("OriginalPrice")
                         .HasColumnType("decimal(18,2)");
 
@@ -607,10 +610,21 @@ namespace eShopSolution.Data.Migrations
                         new
                         {
                             Id = 1,
-                            DateCreated = new DateTime(2023, 2, 2, 16, 32, 47, 186, DateTimeKind.Local).AddTicks(1683),
+                            DateCreated = new DateTime(2023, 3, 2, 11, 28, 58, 694, DateTimeKind.Local).AddTicks(5964),
+                            IsFeatured = true,
                             OriginalPrice = 100000m,
                             Price = 200000m,
                             Stock = 0,
+                            ViewCount = 0
+                        },
+                        new
+                        {
+                            Id = 2,
+                            DateCreated = new DateTime(2023, 3, 2, 11, 28, 58, 695, DateTimeKind.Local).AddTicks(3622),
+                            IsFeatured = false,
+                            OriginalPrice = 200000m,
+                            Price = 300000m,
+                            Stock = 1,
                             ViewCount = 0
                         });
                 });
@@ -653,6 +667,74 @@ namespace eShopSolution.Data.Migrations
                     b.HasIndex("ProductId");
 
                     b.ToTable("ProductImages");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 10,
+                            Caption = "Thumbnail image",
+                            DateCreated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FileSize = 18759L,
+                            ImagePath = "/themes/images/products/b1.jpg",
+                            IsDefault = true,
+                            ProductId = 1,
+                            SortOrder = 1
+                        },
+                        new
+                        {
+                            Id = 11,
+                            Caption = "Thumbnail image",
+                            DateCreated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FileSize = 39972L,
+                            ImagePath = "/themes/images/products/b2.jpg",
+                            IsDefault = true,
+                            ProductId = 2,
+                            SortOrder = 4
+                        },
+                        new
+                        {
+                            Id = 12,
+                            Caption = "Thumbnail image",
+                            DateCreated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FileSize = 39972L,
+                            ImagePath = "/themes/images/products/6.jpg",
+                            IsDefault = true,
+                            ProductId = 2,
+                            SortOrder = 4
+                        },
+                        new
+                        {
+                            Id = 13,
+                            Caption = "Thumbnail image",
+                            DateCreated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FileSize = 5353L,
+                            ImagePath = "/themes/images/products/7.jpg",
+                            IsDefault = true,
+                            ProductId = 1,
+                            SortOrder = 4
+                        },
+                        new
+                        {
+                            Id = 14,
+                            Caption = "Thumbnail image",
+                            DateCreated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FileSize = 231231L,
+                            ImagePath = "/themes/images/products/9.jpg",
+                            IsDefault = true,
+                            ProductId = 1,
+                            SortOrder = 4
+                        },
+                        new
+                        {
+                            Id = 15,
+                            Caption = "Thumbnail image",
+                            DateCreated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FileSize = 231231L,
+                            ImagePath = "/themes/images/products/8.jpg",
+                            IsDefault = true,
+                            ProductId = 2,
+                            SortOrder = 4
+                        });
                 });
 
             modelBuilder.Entity("eShopSolution.Data.Entities.ProductInCategory", b =>
@@ -750,6 +832,18 @@ namespace eShopSolution.Data.Migrations
                             SeoAlias = "viet-tien-men-t-shirt",
                             SeoDescription = "Viet Tien Men T-Shirt",
                             SeoTitle = "Viet Tien Men T-Shirt"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Description = "Torado Men T-Shirt",
+                            Details = "Torado Men T-Shirt",
+                            LanguageId = "vi",
+                            Name = "Torado T-Shirt",
+                            ProductId = 2,
+                            SeoAlias = "Torado-t-shirt",
+                            SeoDescription = "Torado Men T-Shirt",
+                            SeoTitle = "Torado Men T-Shirt"
                         });
                 });
 

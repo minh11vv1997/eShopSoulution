@@ -58,6 +58,7 @@ namespace eShopSolution.AdminApp
                 builder.AddRazorRuntimeCompilation();
             }
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
             services.AddTransient<IUserApiClient, UserApiClient>();
             services.AddTransient<IRoleApiClient, RoleApiClient>();
             services.AddTransient<ILanguageApiClient, LanguageApiClient>();

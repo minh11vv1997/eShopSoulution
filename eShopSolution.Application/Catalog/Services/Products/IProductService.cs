@@ -44,7 +44,9 @@ namespace eShopSolution.Application.Catalog.Services.Products
         // Phần Iterface của client cho trang ngoài.
         Task<PagedResult<ProductViewModel>> GetAllByCategoryId(string languageId, GetPublicProductPagingRequest request);
 
-        Task<List<ProductViewModel>> GetAll(string languageId);
+        Task<List<ProductViewModel>> GetFeatureProduct(string languageId, int take);
+
+        Task<List<ProductViewModel>> GetListTipProduct(string languageId, int take);
 
         Task<bool> CategoryAssign(int id, CategoryAssignRequest request);
     }

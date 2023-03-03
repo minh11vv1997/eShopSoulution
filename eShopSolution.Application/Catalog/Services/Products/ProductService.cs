@@ -305,32 +305,78 @@ namespace eShopSolution.Application.Catalog.Services.Products
             return viewmodelProduct;
         }
 
-        public async Task<List<ProductViewModel>> GetAll(string languageId)
+        public async Task<List<ProductViewModel>> GetFeatureProduct(string languageId, int take)
         {
             // 1: Select và kết nối
             var query = from product in _context.Products
-                        join productTranslition in _context.ProductTranslations on product.Id equals productTranslition.ProductId
-                        join productCategory in _context.ProductInCategories on product.Id equals productCategory.ProductId
-                        join category in _context.Categories on product.Id equals category.Id
-                        where productTranslition.LanguageId == languageId
-                        select new { product, productTranslition, productCategory };
+                        join productTranslition in _context.ProductTranslations on
+                                product.Id equals productTranslition.ProductId
+                        // Sử dụng left join trong linq
+                        join pic in _context.ProductInCategories on productTranslition.Id equals pic.ProductId into p_leftjoin_pic
+                        from pic in p_leftjoin_pic.DefaultIfEmpty()
+                        join pim in _context.ProductImages on product.Id equals pim.ProductId into product_productImgage
+                        from pim in product_productImgage.DefaultIfEmpty()
+                        join c in _context.Categories on pic.CategoryId equals c.Id into pic_leftjoin_c
+                        from c in pic_leftjoin_c.DefaultIfEmpty()
+                        where productTranslition.LanguageId == languageId && (pim == null || pim.IsDefault == true)
+                        && product.IsFeatured == true
+                        select new { product, productTranslition, pic, pim };
 
-            var data = await query.Select(sp => new ProductViewModel()
-            {
-                Id = sp.product.Id,
-                Name = sp.productTranslition.Name,
-                DateCreated = sp.product.DateCreated,
-                Description = sp.productTranslition.Description,
-                Details = sp.productTranslition.Details,
-                LanguageId = sp.productTranslition.LanguageId,
-                OriginalPrice = sp.product.OriginalPrice,
-                Price = sp.product.Price,
-                SeoAlias = sp.productTranslition.SeoAlias,
-                SeoDescription = sp.productTranslition.SeoDescription,
-                SeoTitle = sp.productTranslition.SeoTitle,
-                Stock = sp.product.Stock,
-                ViewCount = sp.product.ViewCount
-            }).ToListAsync();
+            var data = await query.OrderByDescending(x => x.product.DateCreated).Take(take)
+                .Select(sp => new ProductViewModel()
+                {
+                    Id = sp.product.Id,
+                    Name = sp.productTranslition.Name,
+                    DateCreated = sp.product.DateCreated,
+                    Description = sp.productTranslition.Description,
+                    Details = sp.productTranslition.Details,
+                    LanguageId = sp.productTranslition.LanguageId,
+                    OriginalPrice = sp.product.OriginalPrice,
+                    Price = sp.product.Price,
+                    SeoAlias = sp.productTranslition.SeoAlias,
+                    SeoDescription = sp.productTranslition.SeoDescription,
+                    SeoTitle = sp.productTranslition.SeoTitle,
+                    Stock = sp.product.Stock,
+                    ViewCount = sp.product.ViewCount,
+                    ThumbnailImage = sp.pim.ImagePath
+                }).ToListAsync();
+            return data;
+        }
+
+        public async Task<List<ProductViewModel>> GetListTipProduct(string languageId, int take)
+        {
+            // 1: Select và kết nối
+            var query = from product in _context.Products
+                        join productTranslition in _context.ProductTranslations on
+                                product.Id equals productTranslition.ProductId
+                        // Sử dụng left join trong linq
+                        join pic in _context.ProductInCategories on productTranslition.Id equals pic.ProductId into p_leftjoin_pic
+                        from pic in p_leftjoin_pic.DefaultIfEmpty()
+                        join pim in _context.ProductImages on product.Id equals pim.ProductId into product_productImgage
+                        from pim in product_productImgage.DefaultIfEmpty()
+                        join c in _context.Categories on pic.CategoryId equals c.Id into pic_leftjoin_c
+                        from c in pic_leftjoin_c.DefaultIfEmpty()
+                        where productTranslition.LanguageId == languageId && (pim == null || pim.IsDefault == true)
+                        select new { product, productTranslition, pic, pim };
+
+            var data = await query.OrderByDescending(x => x.product.DateCreated).Take(take)
+                .Select(sp => new ProductViewModel()
+                {
+                    Id = sp.product.Id,
+                    Name = sp.productTranslition.Name,
+                    DateCreated = sp.product.DateCreated,
+                    Description = sp.productTranslition.Description,
+                    Details = sp.productTranslition.Details,
+                    LanguageId = sp.productTranslition.LanguageId,
+                    OriginalPrice = sp.product.OriginalPrice,
+                    Price = sp.product.Price,
+                    SeoAlias = sp.productTranslition.SeoAlias,
+                    SeoDescription = sp.productTranslition.SeoDescription,
+                    SeoTitle = sp.productTranslition.SeoTitle,
+                    Stock = sp.product.Stock,
+                    ViewCount = sp.product.ViewCount,
+                    ThumbnailImage = sp.pim.ImagePath
+                }).ToListAsync();
             return data;
         }
 
