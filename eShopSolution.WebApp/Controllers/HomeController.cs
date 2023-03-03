@@ -1,4 +1,6 @@
-﻿using eShopSolution.WebApp.Models;
+﻿using eShopSolution.ApiIntegration;
+using eShopSolution.WebApp.Models;
+using eShopSoulution.Utilities.Constants;
 using LazZiya.ExpressLocalization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Localization;
@@ -7,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -16,17 +19,34 @@ namespace eShopSolution.WebApp.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly ISharedCultureLocalizer _loc;
+        private readonly ISlideApiClient _slideApiClient;
+        private readonly IProductApiClient _productApiClient;
 
-        public HomeController(ILogger<HomeController> logger, ISharedCultureLocalizer loc)
+        public HomeController(ILogger<HomeController> logger,
+            ISlideApiClient slideApiClient,
+            IProductApiClient productApiClient,
+            ISharedCultureLocalizer loc)
         {
             _logger = logger;
+            _productApiClient = productApiClient;
+            _slideApiClient = slideApiClient;
             _loc = loc;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var msg = _loc.GetLocalizedString("VietNamese");
-            return View();
+            var culture = CultureInfo.CurrentCulture.Name;
+            var slide = await _slideApiClient.GetAllSlide();
+            var featureProduct = await _productApiClient.GetFeaturedProducts(culture, SystemConstants.NUMBER_FEATURE_PRODUCT);
+            var listtipProduct = await _productApiClient.GetListTipdProducts(culture, SystemConstants.NUMBER_LISTTIP_PRODUCT);
+            var viewModel = new ParentViewModel()
+            {
+                SlideViewModel = slide,
+                FeaturedProducts = featureProduct,
+                ListTipProduct = listtipProduct
+            };
+
+            return View(viewModel);
         }
 
         public IActionResult Privacy()

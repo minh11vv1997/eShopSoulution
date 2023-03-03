@@ -10,12 +10,12 @@ using System.Text;
 
 namespace eShopSolution.Data.EF
 {
-    public class EShopDbContext : IdentityDbContext<AppUser,AppRole,Guid>
+    public class EShopDbContext : IdentityDbContext<AppUser, AppRole, Guid>
     {
         public EShopDbContext(DbContextOptions options) : base(options)
         {
-
         }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // Configuration using Fluent Api
@@ -50,8 +50,9 @@ namespace eShopSolution.Data.EF
 
             //base.OnModelCreating(modelBuilder);
         }
-        public DbSet<Product> Products {get; set;}
-        public DbSet<Category> Categories { get; set;}
+
+        public DbSet<Product> Products { get; set; }
+        public DbSet<Category> Categories { get; set; }
         public DbSet<AppConfig> AppConfigs { get; set; }
         public DbSet<Cart> Carts { get; set; }
 
@@ -69,8 +70,8 @@ namespace eShopSolution.Data.EF
 
         public DbSet<Promotion> Promotions { get; set; }
 
-
         public DbSet<Transaction> Transactions { get; set; }
         public DbSet<ProductImage> ProductImages { get; set; }
+        public DbSet<Slide> Slides { get; set; }
     }
 }

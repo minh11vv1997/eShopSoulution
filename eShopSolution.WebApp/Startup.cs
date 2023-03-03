@@ -1,7 +1,11 @@
+﻿using eShopSolution.ApiIntegration;
+using eShopSolution.ViewModels.Users;
 using eShopSolution.WebApp.LocalizationResources;
+using FluentValidation.AspNetCore;
 using LazZiya.ExpressLocalization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.Configuration;
@@ -28,6 +32,23 @@ namespace eShopSolution.WebApp
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            #region Add các service để nhận httpClient
+
+            services.AddHttpClient();
+            // Add session để lấy đc header của jwt
+            services.AddControllersWithViews().AddFluentValidation(fluVd =>
+            {
+                // Đăng kí tất cả các validate cùng Asembly
+                fluVd.RegisterValidatorsFromAssemblyContaining<LoginRequestValidator>();
+            });
+            services.AddSession(option =>
+            {
+                option.IdleTimeout = TimeSpan.FromMinutes(30);
+            });
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
+            #endregion Add các service để nhận httpClient
+
             var cultures = new[]
             {
                 new CultureInfo("vi"),
@@ -63,6 +84,9 @@ namespace eShopSolution.WebApp
                          o.DefaultRequestCulture = new RequestCulture("vi");
                      };
                  });
+            services.AddTransient<ISlideApiClient, SlideApiClient>();
+            services.AddTransient<IProductApiClient, ProductApiClient>();
+            services.AddTransient<ICateroryApiClient, CateroryApiClient>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -81,13 +105,44 @@ namespace eShopSolution.WebApp
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
-            app.UseRouting();
+            app.UseAuthentication();
 
+            app.UseRouting();
+            app.UseSession(); // Để sử dụng AddSession lấy header của jwt
             app.UseAuthorization();
 
             app.UseRequestLocalization();
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapControllerRoute(
+                   name: "Product Category En",
+                   pattern: "{culture}/categories/{id?}",
+                   new
+                   {
+                       controller = "Product",
+                       action = "Category"
+                   });
+                endpoints.MapControllerRoute(
+                   name: "Product Category Vi",
+                   pattern: "{culture}/danh-muc/{id?}", new
+                   {
+                       controller = "Product",
+                       action = "Category"
+                   });
+                endpoints.MapControllerRoute(
+                   name: "Product Detail En",
+                   pattern: "{culture}/product/{id?}", new
+                   {
+                       controller = "Product",
+                       action = "Detail"
+                   });
+                endpoints.MapControllerRoute(
+                   name: "Product Detail Vi",
+                   pattern: "{culture}/san-pham/{id?}", new
+                   {
+                       controller = "Product",
+                       action = "Detail"
+                   });
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{culture=vi}/{controller=Home}/{action=Index}/{id?}");

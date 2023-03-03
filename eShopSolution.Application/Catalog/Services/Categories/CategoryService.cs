@@ -31,7 +31,8 @@ namespace eShopSolution.Application.Catalog.Services.Categories
             var data = await query.Select(x => new CategoryViewModel()
             {
                 Id = x.c.Id,
-                Name = x.ct.Name
+                Name = x.ct.Name,
+                ParentId = x.c.ParenId
             }).ToListAsync();
             return data;
         }

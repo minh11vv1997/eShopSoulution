@@ -24,14 +24,6 @@ namespace eShopSolution.BackendApi.Controllers
             _productService = productService;
         }
 
-        // HttGet mặc định : URL : http://localhost:products
-        [HttpGet]
-        public async Task<IActionResult> Get(string languageId)
-        {
-            var product = await _productService.GetAll(languageId);
-            return Ok(product);
-        }
-
         // HttGet thứ 2 Get thì sẽ trùng nên phải đặt Arias
         //  URL : http://localhost:products?pageIndex=1&pageSize=10&CategoryId=
         [HttpGet("{languageId}")]
@@ -191,6 +183,30 @@ namespace eShopSolution.BackendApi.Controllers
                 return BadRequest(resultToken);
             }
             return Ok(resultToken);
+        }
+
+        [HttpGet("featured/{languageId}/{take}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetFeatureProduct(string languageId, int take)
+        {
+            var productImage = await _productService.GetFeatureProduct(languageId, take);
+            if (productImage == null)
+            {
+                return BadRequest("Can not find productImage");
+            }
+            return Ok(productImage);
+        }
+
+        [HttpGet("listTip/{languageId}/{take}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetListTipProduct(string languageId, int take)
+        {
+            var productImage = await _productService.GetListTipProduct(languageId, take);
+            if (productImage == null)
+            {
+                return BadRequest("Can not find productImage");
+            }
+            return Ok(productImage);
         }
     }
 }

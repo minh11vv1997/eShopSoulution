@@ -23,6 +23,7 @@ namespace eShopSolution.BackendApi.Controllers
 
         // Lấy dữ liệu truyền sang ProructId
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> GetAllCategory(string languageId)
         {
             var categories = await _categoryService.GetAll(languageId);

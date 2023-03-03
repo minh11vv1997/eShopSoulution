@@ -7,6 +7,8 @@ namespace eShopSoulution.Utilities.Constants
     public class SystemConstants
     {
         public const string MAIN_CONNECTION_STRING = "eShopSolutionDb";
+        public const int NUMBER_FEATURE_PRODUCT = 5;
+        public const int NUMBER_LISTTIP_PRODUCT = 6;
 
         public class AppSettings
         {
