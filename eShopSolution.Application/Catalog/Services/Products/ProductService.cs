@@ -4,6 +4,7 @@ using eShopSolution.Data.Entities;
 using eShopSolution.ViewModels.CommentDto;
 using eShopSolution.ViewModels.ProductImages;
 using eShopSolution.ViewModels.ProductModels;
+using eShopSoulution.Utilities.Constants;
 using eShopSoulution.Utilities.Excentions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -30,16 +31,13 @@ namespace eShopSolution.Application.Catalog.Services.Products
 
         public async Task<int> Create(ProductCreateRequest requestCr)
         {
-            var product = new Product()
+            var languages = _context.Languages;
+            var translations = new List<ProductTranslation>();
+            foreach (var language in languages)
             {
-                Price = requestCr.Price,
-                OriginalPrice = requestCr.OriginalPrice,
-                Stock = requestCr.Stock,
-                ViewCount = 0,
-                DateCreated = DateTime.Now,
-                ProductTranslations = new List<ProductTranslation>()
+                if (language.Id == requestCr.LanguageId)
                 {
-                    new ProductTranslation()
+                    translations.Add(new ProductTranslation()
                     {
                         Name = requestCr.Name,
                         Description = requestCr.Description,
@@ -48,8 +46,27 @@ namespace eShopSolution.Application.Catalog.Services.Products
                         SeoAlias = requestCr.SeoAlias,
                         SeoTitle = requestCr.SeoTitle,
                         LanguageId = requestCr.LanguageId
-                    }
+                    });
                 }
+                else
+                {
+                    translations.Add(new ProductTranslation()
+                    {
+                        Name = "N/A",
+                        Description = "N/A",
+                        SeoAlias = "N/A",
+                        LanguageId = language.Id
+                    });
+                }
+            }
+            var product = new Product()
+            {
+                Price = requestCr.Price,
+                OriginalPrice = requestCr.OriginalPrice,
+                Stock = requestCr.Stock,
+                ViewCount = 0,
+                DateCreated = DateTime.Now,
+                ProductTranslations = translations
             };
             // Save Images
             if (requestCr.ThumbnailImage != null)
@@ -61,7 +78,7 @@ namespace eShopSolution.Application.Catalog.Services.Products
                         Caption = "Thumbnail image",
                         DateCreated = DateTime.Now,
                         FileSize = requestCr.ThumbnailImage.Length,
-                        ImagePath = await SaveFile(requestCr.ThumbnailImage),
+                        ImagePath = await this.SaveFile(requestCr.ThumbnailImage),
                         IsDefault = true,
                         SortOrder = 1,
                     }
@@ -98,7 +115,7 @@ namespace eShopSolution.Application.Catalog.Services.Products
                 if (thumbnailImage != null)
                 {
                     thumbnailImage.FileSize = requestUp.ThumbnailImage.Length;
-                    thumbnailImage.ImagePath = await SaveFile(requestUp.ThumbnailImage);
+                    thumbnailImage.ImagePath = await this.SaveFile(requestUp.ThumbnailImage);
                     _context.ProductImages.Update(thumbnailImage);
                 }
             }
@@ -278,31 +295,36 @@ namespace eShopSolution.Application.Catalog.Services.Products
         public async Task<ProductViewModel> GetById(int productId, string languageId)
         {
             var product = await _context.Products.FindAsync(productId);
-            var productTransilation = await _context.ProductTranslations.FirstOrDefaultAsync(x => x.ProductId == productId && x.LanguageId == languageId);
+            var productTranslation = await _context.ProductTranslations.
+                FirstOrDefaultAsync(x => x.ProductId == productId
+            && x.LanguageId == languageId);
             // Lay ra list category
-            var categories = await (from cate in _context.Categories
-                                    join cateTranslation in _context.CategoryTranslations on cate.Id equals cateTranslation.CategoryId
-                                    join productcategory in _context.ProductInCategories on cate.Id equals productcategory.CategoryId
-                                    where productcategory.ProductId == productId && cateTranslation.LanguageId == languageId
-                                    select cateTranslation.Name).ToListAsync();
+            var categories = await (from c in _context.Categories
+                                    join ct in _context.CategoryTranslations on c.Id equals ct.CategoryId
+                                    join pic in _context.ProductInCategories on c.Id equals pic.CategoryId
+                                    where pic.ProductId == productId && ct.LanguageId == languageId
+                                    select ct.Name).ToListAsync();
 
-            var viewmodelProduct = new ProductViewModel()
+            var image = await _context.ProductImages.Where(x => x.ProductId == productId && x.IsDefault == true).FirstOrDefaultAsync();
+
+            var productViewModel = new ProductViewModel()
             {
                 Id = product.Id,
                 DateCreated = product.DateCreated,
-                Description = productTransilation != null ? productTransilation.LanguageId : null,
-                LanguageId = productTransilation.LanguageId,
-                Details = productTransilation != null ? productTransilation.Details : null,
-                Name = productTransilation != null ? productTransilation.Name : null,
+                Description = productTranslation != null ? productTranslation.Description : null,
+                LanguageId = productTranslation.LanguageId,
+                Details = productTranslation != null ? productTranslation.Details : null,
+                Name = productTranslation != null ? productTranslation.Name : null,
                 OriginalPrice = product.OriginalPrice,
                 Price = product.Price,
-                SeoAlias = productTransilation != null ? productTransilation.SeoAlias : null,
-                SeoDescription = productTransilation != null ? productTransilation.SeoDescription : null,
+                SeoAlias = productTranslation != null ? productTranslation.SeoAlias : null,
+                SeoDescription = productTranslation != null ? productTranslation.SeoDescription : null,
+                SeoTitle = productTranslation != null ? productTranslation.SeoTitle : null,
                 Stock = product.Stock,
                 ViewCount = product.ViewCount,
                 Categories = categories
             };
-            return viewmodelProduct;
+            return productViewModel;
         }
 
         public async Task<List<ProductViewModel>> GetFeatureProduct(string languageId, int take)

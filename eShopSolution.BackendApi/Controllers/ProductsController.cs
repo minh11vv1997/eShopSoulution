@@ -72,13 +72,15 @@ namespace eShopSolution.BackendApi.Controllers
         }
 
         //Update : sửa cả bản ghi
-        [HttpPut]
-        public async Task<IActionResult> Update([FromBody] ProductUpdateRequest request)
+        [HttpPut("{productId}")]
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> Update([FromRoute] int productId, [FromForm] ProductUpdateRequest request)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
+            request.Id = productId; // Sử dụng lấy id từ router truyền vào backend. C2
             var affecterResult = await _productService.Update(request);
             if (affecterResult == 0)
             {
@@ -86,7 +88,6 @@ namespace eShopSolution.BackendApi.Controllers
             }
             return Ok();
         }
-
         // Upadate 1 phần của bản ghi
         [HttpPatch("{productId}/{newPrice}")]
         public async Task<IActionResult> UpdatePrice(int productId, decimal newPrice)

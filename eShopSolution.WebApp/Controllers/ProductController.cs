@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using eShopSolution.ApiIntegration;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,6 +9,13 @@ namespace eShopSolution.WebApp.Controllers
 {
     public class ProductController : Controller
     {
+        private readonly ICateroryApiClient _cateroryApiClient;
+
+        public ProductController(ICateroryApiClient cateroryApiClient)
+        {
+            // _cateroryApiClient = cateroryApiClient.GetAllCategory();
+        }
+
         public IActionResult Detail(int id)
         {
             return View();
@@ -15,6 +23,7 @@ namespace eShopSolution.WebApp.Controllers
 
         public IActionResult Category(int id)
         {
+            // var products =
             return View();
         }
     }
