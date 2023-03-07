@@ -26,13 +26,15 @@ namespace eShopSolution.AdminApp.Controllers
             var user = User.Identity.Name;
             return View();
         }
+
         [HttpPost]
         public IActionResult Language(NavigationViewModel viewModel)
         {
             HttpContext.Session.SetString(SystemConstants.AppSettings.DefaultLanguageId,
                 viewModel.CurrentLanguageId);
-            return RedirectToAction("Index");
+            return Redirect(viewModel.ReturnUrl);
         }
+
         public IActionResult Privacy()
         {
             return View();

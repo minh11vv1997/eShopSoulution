@@ -13,6 +13,8 @@ namespace eShopSolution.ApiIntegration
 
         Task<bool> CreateProduct(ProductCreateRequest request);
 
+        Task<bool> UpdateProduct(ProductUpdateRequest request);
+
         Task<bool> CategoryAssign(int id, CategoryAssignRequest request);
 
         Task<ProductViewModel> GetByIdCategory(int id, string languageId);

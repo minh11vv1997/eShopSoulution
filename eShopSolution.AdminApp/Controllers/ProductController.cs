@@ -83,6 +83,42 @@ namespace eShopSolution.AdminApp.Controllers
         }
 
         [HttpGet]
+        public async Task<IActionResult> Update(int id)
+        {
+            var languageId = HttpContext.Session.GetString(SystemConstants.AppSettings.DefaultLanguageId);
+            var productId = await _productApiClinet.GetByIdCategory(id, languageId);
+            var updateUpdate = new ProductUpdateRequest()
+            {
+                Id = productId.Id,
+                Description = productId.Description,
+                Details = productId.Details,
+                Name = productId.Name,
+                SeoTitle = productId.SeoTitle,
+                SeoAlias = productId.SeoAlias,
+                SeoDescription = productId.SeoDescription
+            };
+            return View(updateUpdate);
+        }
+
+        [HttpPost]
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> Update([FromForm] ProductUpdateRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(request);
+            }
+            var result = await _productApiClinet.UpdateProduct(request);
+            if (result)
+            {
+                TempData["result"] = "Cập nhật sản phẩm thành công";
+                return RedirectToAction("Index");
+            }
+            ModelState.AddModelError("", "Cập nhật phẩm thất bại");
+            return View(result);
+        }
+
+        [HttpGet]
         public async Task<IActionResult> CategoryAssign(int id)
         {
             var CategoryAssignRequest = await GetCategoryAssignRequest(id);
