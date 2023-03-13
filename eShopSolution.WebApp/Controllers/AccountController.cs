@@ -16,33 +16,32 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace eShopSolution.AdminApp.Controllers
+namespace eShopSolution.WebApp.Controllers
 {
-    public class LoginController : Controller
+    public class AccountController : Controller
     {
         private readonly IUserApiClient _userApiClient;
         private readonly IConfiguration _configuration;
 
-        public LoginController(IUserApiClient userApiClient, IConfiguration configuration)
+        public AccountController(IUserApiClient userApiClient, IConfiguration configuration)
         {
             _userApiClient = userApiClient;
             _configuration = configuration;
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public IActionResult Login()
         {
-            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            HttpContext.Session.Remove("Token");
             return View();
         }
 
         [HttpPost]
-        public async Task<IActionResult> Index(LoginRequest request)
+        public async Task<IActionResult> Login(LoginRequest request)
         {
             if (!ModelState.IsValid)
             {
-                return View(ModelState);
+                ModelState.AddModelError("", "");
+                return View(request);
             }
             if (request.RemeberMe == true)
             {
@@ -62,7 +61,6 @@ namespace eShopSolution.AdminApp.Controllers
                 ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(10),
                 IsPersistent = true
             };
-            HttpContext.Session.SetString(SystemConstants.AppSettings.DefaultLanguageId, _configuration["DefaultLanguageId"]);
             HttpContext.Session.SetString(SystemConstants.AppSettings.Token, token.ResultObj); // xét lại token
             await HttpContext.SignInAsync(
                 CookieAuthenticationDefaults.AuthenticationScheme,
@@ -76,7 +74,48 @@ namespace eShopSolution.AdminApp.Controllers
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            return RedirectToAction("Index", "Login");
+            return RedirectToAction("Login", "Account");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Register()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Register(RegisterRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                ModelState.AddModelError("", "");
+                return View(request);
+            }
+            var result = await _userApiClient.AddRegisterUser(request);
+            if (!result.IsSuccessed)
+            {
+                ModelState.AddModelError("", result.Message);
+                return View();
+            }
+            // Login
+            var loginRequset = await _userApiClient.Authenticate(new LoginRequest()
+            {
+                UserName = request.UserName,
+                Password = request.Password,
+                RemeberMe = true
+            });
+            var userPrincipal = this.ValidateToken(loginRequset.ResultObj);
+            var authProperties = new AuthenticationProperties
+            {
+                ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(10),
+                IsPersistent = true
+            };
+            HttpContext.Session.SetString(SystemConstants.AppSettings.Token, loginRequset.ResultObj); // xét lại token
+            await HttpContext.SignInAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme,
+                userPrincipal,
+                authProperties);
+            return RedirectToAction("Index", "Home");
         }
 
         // Giải mã claim

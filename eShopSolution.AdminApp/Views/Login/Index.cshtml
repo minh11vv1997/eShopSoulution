@@ -25,15 +25,17 @@
                             <div class="card shadow-lg border-0 rounded-lg mt-5">
                                 <div class="card-header"><h3 class="text-center font-weight-light my-4">Đăng nhập</h3></div>
                                 <div class="card-body">
-                                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                    <div asp-validation-summary="All" class="text-error"></div>
                                     <form asp-controller="Login" asp-action="Index" method="post">
                                         <div class="form-floating mb-3">
                                             <input class="form-control" asp-for="UserName" type="text" placeholder="Nhập tài khoản" />
                                             <label>Tài khoản</label>
+                                            <span asp-validation-for="UserName" class="text-error"></span>
                                         </div>
                                         <div class="form-floating mb-3">
                                             <input class="form-control" asp-for="Password" type="password" placeholder="Password" />
                                             <label>Mật khẩu</label>
+                                            <span asp-validation-for="Password" class="text-error"></span>
                                         </div>
                                         <div class="form-check mb-3">
                                             <input class="form-check-input" asp-for="RemeberMe" type="checkbox" />

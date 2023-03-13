@@ -3,6 +3,7 @@ using eShopSolution.ViewModels.Users;
 using eShopSolution.WebApp.LocalizationResources;
 using FluentValidation.AspNetCore;
 using LazZiya.ExpressLocalization;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -35,6 +36,13 @@ namespace eShopSolution.WebApp
             #region Add các service để nhận httpClient
 
             services.AddHttpClient();
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(
+              option =>
+              {
+                  option.LoginPath = "/Account/Login";
+                  //option.LoginPath = "/User/Login";
+                  option.AccessDeniedPath = "/User/Forbidden/";
+              });
             // Add session để lấy đc header của jwt
             services.AddControllersWithViews().AddFluentValidation(fluVd =>
             {
@@ -87,6 +95,7 @@ namespace eShopSolution.WebApp
             services.AddTransient<ISlideApiClient, SlideApiClient>();
             services.AddTransient<IProductApiClient, ProductApiClient>();
             services.AddTransient<ICateroryApiClient, CateroryApiClient>();
+            services.AddTransient<IUserApiClient, UserApiClient>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -131,7 +140,7 @@ namespace eShopSolution.WebApp
                    });
                 endpoints.MapControllerRoute(
                    name: "Product Detail En",
-                   pattern: "{culture}/product/{id?}", new
+                   pattern: "{culture}/products/{id?}", new
                    {
                        controller = "Product",
                        action = "Detail"
