@@ -87,6 +87,7 @@ namespace eShopSolution.AdminApp.Controllers
         {
             var languageId = HttpContext.Session.GetString(SystemConstants.AppSettings.DefaultLanguageId);
             var productId = await _productApiClinet.GetByIdCategory(id, languageId);
+
             var updateUpdate = new ProductUpdateRequest()
             {
                 Id = productId.Id,

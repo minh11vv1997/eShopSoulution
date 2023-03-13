@@ -48,6 +48,8 @@ namespace eShopSolution.Application.Catalog.Services.Products
 
         Task<List<ProductViewModel>> GetListTipProduct(string languageId, int take);
 
+        Task<List<ProductViewModel>> GetReLatedProduct(string languageId, int id);
+
         Task<bool> CategoryAssign(int id, CategoryAssignRequest request);
     }
 }

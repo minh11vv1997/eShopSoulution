@@ -117,6 +117,10 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Add to" xml:space="preserve">
+    <value>Add to</value>
+    <comment>Common</comment>
+  </data>
   <data name="categoryUrl" xml:space="preserve">
     <value>categories</value>
     <comment>Layouts</comment>
@@ -137,13 +141,37 @@
     <value>Featured Products</value>
     <comment>/Home/Index</comment>
   </data>
+  <data name="Home" xml:space="preserve">
+    <value>Home</value>
+    <comment>Common</comment>
+  </data>
   <data name="Login" xml:space="preserve">
     <value>Login</value>
     <comment>Layouts</comment>
   </data>
+  <data name="Page" xml:space="preserve">
+    <value>Page</value>
+    <comment>Common</comment>
+  </data>
+  <data name="Product Details" xml:space="preserve">
+    <value>Product Details</value>
+    <comment>/Product/Detail</comment>
+  </data>
+  <data name="products" xml:space="preserve">
+    <value>products</value>
+    <comment>Common</comment>
+  </data>
   <data name="productUrl" xml:space="preserve">
     <value>product</value>
     <comment>Layouts</comment>
+  </data>
+  <data name="Related Products" xml:space="preserve">
+    <value>Related Products</value>
+    <comment>/Product/Detail</comment>
+  </data>
+  <data name="Sort By" xml:space="preserve">
+    <value>Sort By</value>
+    <comment>/Product/Category</comment>
   </data>
   <data name="Specials Offer" xml:space="preserve">
     <value>Specials Offer</value>
@@ -156,5 +184,9 @@
   <data name="VIEW" xml:space="preserve">
     <value>VIEW</value>
     <comment>/Home/Index</comment>
+  </data>
+  <data name="View detail" xml:space="preserve">
+    <value>View detail</value>
+    <comment>/Product/Category</comment>
   </data>
 </root>

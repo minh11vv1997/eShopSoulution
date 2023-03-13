@@ -22,6 +22,7 @@ namespace eShopSolution.Application.Catalog.Services.Products
     {
         private readonly EShopDbContext _context;
         private readonly IStoregeService _storegeService;
+        private const string USER_CONTENT_FOLDER_NAME = "user-content";
 
         public ProductService(EShopDbContext context, IStoregeService storegeService)
         {
@@ -162,10 +163,12 @@ namespace eShopSolution.Application.Catalog.Services.Products
                         // Sử dụng left join trong linq
                         join pic in _context.ProductInCategories on p.Id equals pic.ProductId into p_leftjoin_pic
                         from pic in p_leftjoin_pic.DefaultIfEmpty()
+                        join pmg in _context.ProductImages on p.Id equals pmg.ProductId into p_leftjoin_pmg
+                        from pmg in p_leftjoin_pmg.DefaultIfEmpty()
                         join c in _context.Categories on pic.CategoryId equals c.Id into pic_leftjoin_c
                         from c in pic_leftjoin_c.DefaultIfEmpty()
-                        where pt.LanguageId == request.LanguageId
-                        select new { p, pt, pic };
+                        where pt.LanguageId == request.LanguageId && pmg.IsDefault == true
+                        select new { p, pt, pic, pmg };
             //B2: Filter : Lọc ra điều kiện tìm kiếm
             if (!string.IsNullOrEmpty(request.Keyword))
             {
@@ -175,6 +178,7 @@ namespace eShopSolution.Application.Catalog.Services.Products
             {
                 query = query.Where(p => p.pic.CategoryId == request.CategoryId);
             }
+
             //B3 : Paging : phân trang
             int totalRow = await query.CountAsync();
             var data = await query.Skip((request.PageIndex - 1) * request.PageSize)
@@ -193,7 +197,8 @@ namespace eShopSolution.Application.Catalog.Services.Products
                                 SeoDescription = sp.pt.SeoDescription,
                                 SeoTitle = sp.pt.SeoTitle,
                                 Stock = sp.p.Stock,
-                                ViewCount = sp.p.ViewCount
+                                ViewCount = sp.p.ViewCount,
+                                ThumbnailImage = sp.pmg.ImagePath
                             }).ToListAsync();
 
             //B4: Select projection
@@ -212,7 +217,8 @@ namespace eShopSolution.Application.Catalog.Services.Products
             var originalFileName = ContentDispositionHeaderValue.Parse(formFile.ContentDisposition).FileName.Trim('"');
             var fileName = $"{Guid.NewGuid()}{Path.GetExtension(originalFileName)}";
             await _storegeService.SaveFileAsync(formFile.OpenReadStream(), fileName);
-            return fileName;
+            var fileNameUrl = "/" + USER_CONTENT_FOLDER_NAME + "/" + fileName;
+            return fileNameUrl;
         }
 
         public async Task<int> AddImage(int productId, ProductImageCreateRequest requestCrIm)
@@ -274,6 +280,7 @@ namespace eShopSolution.Application.Catalog.Services.Products
 
         public async Task<ProductImageViewModel> GetImageById(int productImagesId)
         {
+            // Find is search in the
             var image = await _context.ProductImages.FindAsync(productImagesId);
             if (image == null)
             {
@@ -524,6 +531,43 @@ namespace eShopSolution.Application.Catalog.Services.Products
                 }
             }
             return await _context.SaveChangesAsync() > 0;
+        }
+
+        public async Task<List<ProductViewModel>> GetReLatedProduct(string languageId, int id)
+        {
+            // 1: Select và kết nối
+            var query = from product in _context.Products
+                        join productTranslition in _context.ProductTranslations on
+                                product.Id equals productTranslition.ProductId
+                        // Sử dụng left join trong linq
+                        join pic in _context.ProductInCategories on productTranslition.Id equals pic.ProductId into p_leftjoin_pic
+                        from pic in p_leftjoin_pic.DefaultIfEmpty()
+                        join pim in _context.ProductImages on product.Id equals pim.ProductId into product_productImgage
+                        from pim in product_productImgage.DefaultIfEmpty()
+                        join c in _context.Categories on pic.CategoryId equals c.Id into pic_leftjoin_c
+                        from c in pic_leftjoin_c.DefaultIfEmpty()
+                        where productTranslition.LanguageId == languageId && (pim == null || pim.IsDefault == true)
+                        select new { product, productTranslition, pic, pim };
+
+            var data = await query.Where(x => x.productTranslition.ProductId == id && x.productTranslition.Name != "N/A")
+                .Select(sp => new ProductViewModel()
+                {
+                    Id = sp.product.Id,
+                    Name = sp.productTranslition.Name,
+                    DateCreated = sp.product.DateCreated,
+                    Description = sp.productTranslition.Description,
+                    Details = sp.productTranslition.Details,
+                    LanguageId = sp.productTranslition.LanguageId,
+                    OriginalPrice = sp.product.OriginalPrice,
+                    Price = sp.product.Price,
+                    SeoAlias = sp.productTranslition.SeoAlias,
+                    SeoDescription = sp.productTranslition.SeoDescription,
+                    SeoTitle = sp.productTranslition.SeoTitle,
+                    Stock = sp.product.Stock,
+                    ViewCount = sp.product.ViewCount,
+                    ThumbnailImage = sp.pim.ImagePath
+                }).ToListAsync();
+            return data;
         }
     }
 }

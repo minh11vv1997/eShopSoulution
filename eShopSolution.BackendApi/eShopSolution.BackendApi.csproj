@@ -17,8 +17,4 @@
     <ProjectReference Include="..\eShopSoulution.Utilities\eShopSoulution.Utilities.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="wwwroot\user-content\" />
-  </ItemGroup>
-
 </Project>

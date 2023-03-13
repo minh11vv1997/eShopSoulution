@@ -1,4 +1,5 @@
 ﻿using eShopSolution.ViewModels.CommentDto;
+using eShopSolution.ViewModels.ProductImages;
 using eShopSolution.ViewModels.ProductModels;
 using System;
 using System.Collections.Generic;
@@ -22,5 +23,9 @@ namespace eShopSolution.ApiIntegration
         Task<List<ProductViewModel>> GetFeaturedProducts(string languageId, int take);
 
         Task<List<ProductViewModel>> GetListTipdProducts(string languageId, int take);
+
+        Task<List<ProductViewModel>> GetListReLatedProduct(string languageId, int id);
+
+        Task<List<ProductImageViewModel>> GetProductImages(int productId, int id);
     }
 }
