@@ -11,7 +11,7 @@ namespace eShopSolution.BackendApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    [AllowAnonymous]
     public class CategoriesController : ControllerBase
     {
         private readonly ICategoryService _categoryService;
@@ -23,10 +23,16 @@ namespace eShopSolution.BackendApi.Controllers
 
         // Lấy dữ liệu truyền sang ProructId
         [HttpGet]
-        [AllowAnonymous]
         public async Task<IActionResult> GetAllCategory(string languageId)
         {
             var categories = await _categoryService.GetAll(languageId);
+            return Ok(categories);
+        }
+
+        [HttpGet("{id}/{languageId}")]
+        public async Task<IActionResult> GetById(string languageId, int id)
+        {
+            var categories = await _categoryService.GetById(languageId, id);
             return Ok(categories);
         }
     }

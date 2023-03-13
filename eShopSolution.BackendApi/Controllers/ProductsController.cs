@@ -14,7 +14,7 @@ namespace eShopSolution.BackendApi.Controllers
     // Chuẩn RestAPi : api/products
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    [AllowAnonymous]
     public class ProductsController : ControllerBase
     {
         private readonly IProductService _productService;
@@ -55,6 +55,7 @@ namespace eShopSolution.BackendApi.Controllers
         //Create : thêm mới
         [HttpPost]
         [Consumes("multipart/form-data")] //Chấp nhận truyền form lên
+        [Authorize]
         public async Task<IActionResult> Create([FromForm] ProductCreateRequest request)
         {
             if (!ModelState.IsValid)
@@ -74,6 +75,7 @@ namespace eShopSolution.BackendApi.Controllers
         //Update : sửa cả bản ghi
         [HttpPut("{productId}")]
         [Consumes("multipart/form-data")]
+        [Authorize]
         public async Task<IActionResult> Update([FromRoute] int productId, [FromForm] ProductUpdateRequest request)
         {
             if (!ModelState.IsValid)
@@ -88,8 +90,10 @@ namespace eShopSolution.BackendApi.Controllers
             }
             return Ok();
         }
+
         // Upadate 1 phần của bản ghi
         [HttpPatch("{productId}/{newPrice}")]
+        [Authorize]
         public async Task<IActionResult> UpdatePrice(int productId, decimal newPrice)
         {
             var isSuccessful = await _productService.UpdatePrice(productId, newPrice);
@@ -102,6 +106,7 @@ namespace eShopSolution.BackendApi.Controllers
 
         //Delete : xóa
         [HttpDelete("{productId}")]
+        [Authorize]
         public async Task<IActionResult> Delete(int productId)
         {
             var affecterResult = await _productService.Delete(productId);
@@ -114,6 +119,7 @@ namespace eShopSolution.BackendApi.Controllers
 
         // Images
         [HttpPost("{productId}/{images}")]
+        [Authorize]
         public async Task<IActionResult> CreateImage(int productId, [FromForm] ProductImageCreateRequest request)
         {
             if (!ModelState.IsValid)
@@ -130,10 +136,21 @@ namespace eShopSolution.BackendApi.Controllers
             return CreatedAtAction(nameof(GetImageById), new { id = imageId }, images);
         }
 
-        [HttpGet("{productId}/images/{imageId}")]
-        public async Task<IActionResult> GetImageById(int productId, int imageId)
+        [HttpGet("{productId}/images/{imageIds}")]
+        public async Task<IActionResult> GetImageById(int productId, int imageIds)
         {
-            var productImageId = await _productService.GetImageById(imageId);
+            var productImageId = await _productService.GetImageById(imageIds);
+            if (productImageId == null)
+            {
+                return BadRequest("Cannot fint productImages");
+            }
+            return Ok(productImageId);
+        }
+
+        [HttpGet("{productId}/imagesList/{imageId}")]
+        public async Task<IActionResult> GetListImageById(int imageId)
+        {
+            var productImageId = await _productService.GetListImage(imageId);
             if (productImageId == null)
             {
                 return BadRequest("Cannot fint productImages");
@@ -142,6 +159,7 @@ namespace eShopSolution.BackendApi.Controllers
         }
 
         [HttpPut("{productId}/images/{imageId}")]
+        [Authorize]
         public async Task<IActionResult> UpdateImage(int imageId, [FromForm] ProductImageUpdateRequest request)
         {
             if (!ModelState.IsValid)
@@ -157,6 +175,7 @@ namespace eShopSolution.BackendApi.Controllers
         }
 
         [HttpDelete("{productId}/images/{imageId}")]
+        [Authorize]
         public async Task<IActionResult> RemoteImage(int imageId)
         {
             if (!ModelState.IsValid)
@@ -172,6 +191,7 @@ namespace eShopSolution.BackendApi.Controllers
         }
 
         [HttpPut("{id}/categories")]
+        [Authorize]
         public async Task<IActionResult> CategoryAssign(int id, [FromBody] CategoryAssignRequest request)
         {
             if (!ModelState.IsValid)
@@ -208,6 +228,18 @@ namespace eShopSolution.BackendApi.Controllers
                 return BadRequest("Can not find productImage");
             }
             return Ok(productImage);
+        }
+
+        [HttpGet("related/{languageId}/{id}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetReLatedProduct(string languageId, int id)
+        {
+            var productImageLated = await _productService.GetFeatureProduct(languageId, id);
+            if (productImageLated == null)
+            {
+                return BadRequest("Can not find productImage");
+            }
+            return Ok(productImageLated);
         }
     }
 }

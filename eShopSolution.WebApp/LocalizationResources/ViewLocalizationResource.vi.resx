@@ -117,6 +117,10 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Add to" xml:space="preserve">
+    <value>Thêm vào</value>
+    <comment>Common</comment>
+  </data>
   <data name="categoryUrl" xml:space="preserve">
     <value>danh-muc</value>
     <comment>Layouts</comment>
@@ -137,13 +141,37 @@
     <value>Sản phẩm nổi bật</value>
     <comment>/Home/Index</comment>
   </data>
+  <data name="Home" xml:space="preserve">
+    <value>Trang chủ</value>
+    <comment>Common</comment>
+  </data>
   <data name="Login" xml:space="preserve">
     <value>Đăng nhập</value>
     <comment>Layouts</comment>
   </data>
+  <data name="Page" xml:space="preserve">
+    <value>Trang</value>
+    <comment>Common</comment>
+  </data>
+  <data name="Product Details" xml:space="preserve">
+    <value>Chi tiết sản phẩm</value>
+    <comment>/Product/Detail</comment>
+  </data>
+  <data name="products" xml:space="preserve">
+    <value>san-pham</value>
+    <comment>Common</comment>
+  </data>
   <data name="productUrl" xml:space="preserve">
     <value>san-pham</value>
     <comment>/Home/Index</comment>
+  </data>
+  <data name="Related Products" xml:space="preserve">
+    <value>Sản phẩm liên quan</value>
+    <comment>/Product/Detail</comment>
+  </data>
+  <data name="Sort By" xml:space="preserve">
+    <value>Sắp xếp theo</value>
+    <comment>/Product/Category</comment>
   </data>
   <data name="Specials Offer" xml:space="preserve">
     <value>Khuyến mại đặc biệt</value>
@@ -156,5 +184,9 @@
   <data name="VIEW" xml:space="preserve">
     <value>Xem</value>
     <comment>/Home/Index</comment>
+  </data>
+  <data name="View detail" xml:space="preserve">
+    <value>Xem chi tiết</value>
+    <comment>/Product/Category</comment>
   </data>
 </root>

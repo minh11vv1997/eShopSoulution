@@ -23,5 +23,11 @@ namespace eShopSolution.ApiIntegration
             var data = await base.GetListAsync<CategoryViewModel>($"/api/Categories?languageId=" + languageId);
             return data;
         }
+
+        public async Task<CategoryViewModel> GetById(string languageId, int id)
+        {
+            var data = await base.GetAsync<CategoryViewModel>($"/api/Categories/{id}/{languageId}");
+            return data;
+        }
     }
 }

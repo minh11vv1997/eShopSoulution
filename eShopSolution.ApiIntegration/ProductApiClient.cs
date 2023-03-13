@@ -1,5 +1,6 @@
 ﻿using eShopSolution.ApiIntegration;
 using eShopSolution.ViewModels.CommentDto;
+using eShopSolution.ViewModels.ProductImages;
 using eShopSolution.ViewModels.ProductModels;
 using eShopSoulution.Utilities.Constants;
 using Microsoft.AspNetCore.Http;
@@ -58,16 +59,16 @@ namespace eShopSolution.ApiIntegration
                 ByteArrayContent bytes = new ByteArrayContent(data);
                 requestContent.Add(bytes, "Thumbnailimage", request.ThumbnailImage.FileName);
             }
-            requestContent.Add(new StringContent(request.Price.ToString()), "price");
+            requestContent.Add(new StringContent(string.IsNullOrEmpty(request.Price.ToString()) ? "0" : request.Price.ToString()), "price");
             requestContent.Add(new StringContent(request.OriginalPrice.ToString()), "originalPrice");
             requestContent.Add(new StringContent(request.Stock.ToString()), "stock");
-            requestContent.Add(new StringContent(request.Name.ToString()), "name");
-            requestContent.Add(new StringContent(request.Description.ToString()), "description");
+            requestContent.Add(new StringContent(string.IsNullOrEmpty(request.Name) ? "" : request.Name.ToString()), "name");
+            requestContent.Add(new StringContent(string.IsNullOrEmpty(request.Description) ? "" : request.Description.ToString()), "description");
 
-            requestContent.Add(new StringContent(request.Details.ToString()), "details");
-            requestContent.Add(new StringContent(request.SeoDescription.ToString()), "seoDescription");
-            requestContent.Add(new StringContent(request.SeoTitle.ToString()), "seoTitle");
-            requestContent.Add(new StringContent(request.SeoAlias.ToString()), "seoAlias");
+            requestContent.Add(new StringContent(string.IsNullOrEmpty(request.Details) ? "" : request.Details.ToString()), "details");
+            requestContent.Add(new StringContent(string.IsNullOrEmpty(request.SeoDescription) ? "" : request.SeoDescription.ToString()), "seoDescription");
+            requestContent.Add(new StringContent(string.IsNullOrEmpty(request.SeoTitle) ? "" : request.SeoTitle.ToString()), "seoTitle");
+            requestContent.Add(new StringContent(string.IsNullOrEmpty(request.SeoAlias) ? "" : request.SeoAlias.ToString()), "seoAlias");
             requestContent.Add(new StringContent(languageId), "languageId");
             // Gửi request đi.
             var reponse = await client.PostAsync($"/api/Products", requestContent);
@@ -147,6 +148,18 @@ namespace eShopSolution.ApiIntegration
         public async Task<List<ProductViewModel>> GetListTipdProducts(string languageId, int take)
         {
             var data = await GetListAsync<ProductViewModel>($"/api/Products/listTip/{languageId}/{take}");
+            return data;
+        }
+
+        public async Task<List<ProductViewModel>> GetListReLatedProduct(string languageId, int id)
+        {
+            var data = await GetListAsync<ProductViewModel>($"/api/Products/related/{languageId}/{id}");
+            return data;
+        }
+
+        public async Task<List<ProductImageViewModel>> GetProductImages(int productId, int id)
+        {
+            var data = await GetListAsync<ProductImageViewModel>($"/api/Products/{productId}/imagesList/{id}");
             return data;
         }
     }
