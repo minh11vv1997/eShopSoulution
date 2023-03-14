@@ -1,5 +1,7 @@
-﻿@{
+﻿@inject Microsoft.Extensions.Configuration.IConfiguration Configuration
+@{
     var culture = CultureInfo.CurrentCulture.Name;
+
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -34,6 +36,8 @@
     <style type="text/css" id="enject"></style>
 </head>
 <body>
+    <input type="hidden" id="hidCulture" value="@culture" />
+    <input type="hidden" id="hidUrl" value="@Configuration["BaseAddress"]" />
     <div id="header">
         <div class="container">
             <div id="welcomeLine" class="row">
@@ -58,9 +62,9 @@
                                                              new { area="", cltr="{0}", returnUrl="{1}" })">
                             </language-nav>
                         </div>
-                        <a href="product_summary.html">
+                        <a href="/@culture/cart">
                             <span class="btn btn-mini btn-primary">
-                                <i class="icon-shopping-cart icon-white"></i> [ 3 ] Itemes in your cart
+                                <i class="icon-shopping-cart icon-white"></i> [ <span id="lbl_number_of_items_header">0</span> ] Itemes in your cart
                             </span>
                         </a>
                     </div>
@@ -176,7 +180,12 @@
 
     <script src="/themes/js/bootshop.js"></script>
     <script src="/themes/js/jquery.lightbox-0.5.js"></script>
-
+    <script src="/themes/js/functions.js"></script>
+    @RenderSection("scripts", required: false)
+    <script>
+        var site = new SiteController();
+        site.initializeHeader();
+    </script>
     <!-- /themes switcher section ============================================================================================= -->
     <div id="secectionBox">
         <link rel="stylesheet" href="/themes/switch//themeswitch.css" type="text/css" media="screen" />

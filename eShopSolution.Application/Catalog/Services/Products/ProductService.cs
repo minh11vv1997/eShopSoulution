@@ -329,7 +329,8 @@ namespace eShopSolution.Application.Catalog.Services.Products
                 SeoTitle = productTranslation != null ? productTranslation.SeoTitle : null,
                 Stock = product.Stock,
                 ViewCount = product.ViewCount,
-                Categories = categories
+                Categories = categories,
+                ThumbnailImage = image.ImagePath
             };
             return productViewModel;
         }
